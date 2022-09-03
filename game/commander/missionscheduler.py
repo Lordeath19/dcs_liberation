@@ -52,7 +52,6 @@ class MissionScheduler:
         }
 
         aa_types = {
-            FlightType.DECOY,
             FlightType.DEAD,
             FlightType.SEAD,
         }

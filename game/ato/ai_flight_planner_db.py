@@ -305,16 +305,14 @@ SEAD_CAPABLE = [
     Tornado_GR4,
 ]
 
-# Aircraft used for Decoy tasks. Must be capable of the CAS DCS task.
-DECOY_CAPABLE = [
-    FA_18C_hornet,
-    F_14B,
-    F_14A_135_GR,
-]
-
 
 # Aircraft used for DEAD tasks. Must be capable of the CAS DCS task.
-DEAD_CAPABLE = [
+DEAD_CAPABLE = SEAD_CAPABLE + [
+    AJS37,
+    F_14B,
+    F_14A_135_GR,
+    JAS39Gripen_AG,
+    B_1B,
     B_52H,
     Tu_160,
     Tu_95MS,
@@ -344,16 +342,16 @@ DEAD_CAPABLE = [
     FW_190A8,
 ] + SEAD_CAPABLE
 
-STANDOFF_CAPABLE = [
-    F_117A,
-    B_52H,
-    Tu_160,
-    Tu_95MS,
-    H_6J,
-]
 
 # Aircraft used for Strike mission
 STRIKE_CAPABLE = [
+    F_117A,
+    B_1B,
+    B_52H,
+    Tu_160,
+    Tu_95MS,
+    Tu_22M3,
+    H_6J,
     F_15E,
     F_117A,
     FA_18C_hornet,
@@ -599,8 +597,6 @@ def dcs_types_for_task(task: FlightType) -> Sequence[Type[FlyingType]]:
         return SEAD_CAPABLE
     elif task == FlightType.DEAD:
         return DEAD_CAPABLE
-    elif task == FlightType.DECOY:
-        return DECOY_CAPABLE
     elif task == FlightType.OCA_AIRCRAFT:
         return CAS_CAPABLE
     elif task == FlightType.OCA_RUNWAY:

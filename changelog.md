@@ -6,63 +6,14 @@ Saves from 6.x are not compatible with 7.0.
 
 ## Fixes
 
-# 6.1.1
-
-## Features/Improvements
-
-* **[Mission Generation]** Added era limitation for ammo, when enabled will limit the ammunition on airfields.
-* **[Mission Generation]** Target waypoints now clear forests in a 1000f radius.
-* **[Mission Generation]** AWACS mission area are no longer excluded from culling.
-* **[Mission Generation]** Single flight packages, set to ASAP, will no longer have a HOLD waypoint.
-* **[Mission Generation]** AI flights spawned in air now have altitude separation
-* **[Mission Generation]** Standoff capable aircraft assigned STRIKE tasks now expend all ammo at INGRESS.
-* **[Engine]** Parked aircraft kills are now tracked after being hit.
-* **[Flight Planner]** Added Decoy mission, FA-18/F-14 can now launch ADM-141 TALDS at target area.
-* **[Flight Planner]** Units now fly at appropriate cruise speeds, increasing speed between waypoints.
-* **[Flight Planning]** Flight planner now respects aircraft priority per task (for example, B-52H used for STRIKE before F-14).
-* **[Flight Planning]** Mission scheduling now favors CAP to launch before CAS (SEAD/STRIKE/BAI/etc)
-* **[Flight Planning]** Flight planner priority increased for radar SAMs.
-* **[Flight Planning]** Added support for cruise missile runway strikes.
-* **[Flight Planning]** Plan decoy tasks for SAMs with point defense.
-* **[Flight Planning]** CAS can now be called on all ground targets.
-* **[Flight Planning]** When desired mission duration is set to minimum, schedule flights ASAP
-* **[UI]** Added buttons for Set ASAP and Clean Waypoints.
-* **[UI]** Added button on control points to ignore infrastructure strikes.
-* **[UI]** Added option to limit how many aircraft are tasked at once per side (limit active aircraft).
-
-## Fixes
-
-* **[Data]** Fixed unit ID for the KS-19 AAA. KS-19 would not previously generate correctly in missions. A new game is required for this fix to take effect.
-* **[Flight Planning]** Automatic flight planning will no longer accidentally plan a recovery tanker instead of a theater refueling package. This fixes a potential crash during mission generation when opfor plans a refueling task at a sunk carrier. You'll need to skip the current turn to force opfor to replan their flights to get the fix.
-* **[Flight Planning]** AI no longer plan missions on destroyed objectives (For example AEWC on a destroyed carrier)
-* **[Mission Generation]** Using heliports (airports without any runways) will no longer cause mission generation to fail.
-* **[Mission Generation]** AJS37 now has appropriate loadout for strike missions
-* **[Mission Generation]** Prevent helicopters from spawning into collisions at FARPs when more than one flight uses the same FARP.
-* **[Mission Generation]** Large aircraft now respect late activation when spawning in small airports.
-* **[Mission Generation]** Aircraft no longer spawn in heli slots and crash.
-
 # 6.1.0
 
 Saves from 6.0.0 are compatible with 6.1.0
 
 ## Features/Improvements
 
-* **[Engine]** Support for DCS 2.8.1.34437, including Blackshark 3.
-* **[Factions]** Defaulted bluefor modern to use Georgian and Ukrainian liveries for Russian aircraft.
-* **[Factions]** Added Peru.
-* **[Flight Planning]** AEW&C and Refueling flights are now plannable on LHA carriers.
-* **[Flight Planning]** Refueling flights planned on aircraft carriers will act as a recovery tanker for the carrier.
-* **[Loadouts]** Adjusted F-15E loadouts.
-* **[Mission Generation]** The previous turn will now be saved as last_turn.liberation when submitting mission results. This is often essential for debugging bug reports. **Include this file in the bug report whenever it is available.**
-* **[Modding]** Added support for the HMS Ariadne, Achilles, and Castle class.
-* **[Modding]** Added HMS Invincible to the game data as a helicopter carrier.
-
 ## Fixes
 
-* **[Flight Planning]** Fixes CAS flights not having landing waypoints.
-* **[Mission Generation]** Airbase and FOB capture is no longer blocked by grounded aircraft / helicopters.
-* **[Squadrons]** Fixed the livery for the VF-33 F-14A squadron.
-* **[Theaters]** Fixed Channel campaigns not having data for land/sea/obstacle boundaries, causing front lines to extend into forests and water. Requires a new campaign to get the fix.
 * **[UI]** Fixed an issue where manual submit of mission results did not end the mission correctly.
 
 # 6.0.0

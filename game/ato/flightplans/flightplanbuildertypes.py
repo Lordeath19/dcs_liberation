@@ -21,7 +21,6 @@ from .ocarunway import OcaRunwayFlightPlan
 from .packagerefueling import PackageRefuelingFlightPlan
 from .planningerror import PlanningError
 from .sead import SeadFlightPlan
-from .decoy import DecoyFlightPlan
 from .shiprecoverytanker import RecoveryTankerFlightPlan
 from .strike import StrikeFlightPlan
 from .sweep import SweepFlightPlan
@@ -57,7 +56,6 @@ class FlightPlanBuilderTypes:
             FlightType.OCA_AIRCRAFT: OcaAircraftFlightPlan.builder_type(),
             FlightType.OCA_RUNWAY: OcaRunwayFlightPlan.builder_type(),
             FlightType.SEAD: SeadFlightPlan.builder_type(),
-            FlightType.DECOY: DecoyFlightPlan.builder_type(),
             FlightType.SEAD_ESCORT: EscortFlightPlan.builder_type(),
             FlightType.STRIKE: StrikeFlightPlan.builder_type(),
             FlightType.SWEEP: SweepFlightPlan.builder_type(),

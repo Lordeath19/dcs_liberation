@@ -179,7 +179,6 @@ class WaypointGenerator:
             FlightWaypointType.INGRESS_OCA_AIRCRAFT: OcaAircraftIngressBuilder,
             FlightWaypointType.INGRESS_OCA_RUNWAY: OcaRunwayIngressBuilder,
             FlightWaypointType.INGRESS_SEAD: SeadIngressBuilder,
-            FlightWaypointType.INGRESS_DECOY: DecoyIngressBuilder,
             FlightWaypointType.INGRESS_STRIKE: StrikeIngressBuilder,
             FlightWaypointType.INGRESS_SWEEP: SweepIngressBuilder,
             FlightWaypointType.JOIN: JoinPointBuilder,

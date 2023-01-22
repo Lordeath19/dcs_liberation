@@ -127,6 +127,7 @@ class FlightGroupSpawner:
             )
             group = self._generate_over_departure(name, cp)
             group.points[0].alt = 1500
+            self.flight.start_type = StartType.IN_FLIGHT
             return group
 
     def generate_mid_mission(self) -> FlyingGroup[Any]:

@@ -136,6 +136,7 @@ class InFlight(FlightState, ABC):
             FlightWaypointType.INGRESS_OCA_AIRCRAFT,
             FlightWaypointType.INGRESS_OCA_RUNWAY,
             FlightWaypointType.INGRESS_SEAD,
+            FlightWaypointType.INGRESS_DECOY,
             FlightWaypointType.INGRESS_STRIKE,
             FlightWaypointType.INGRESS_AIR_ASSAULT,
         }

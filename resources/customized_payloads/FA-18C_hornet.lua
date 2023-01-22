@@ -290,6 +290,47 @@ local unitPayloads = {
 				[1] = 11,
 			},
 		},
+		[8] = {
+			["displayName"] = "Liberation Decoy",
+			["name"] = "Liberation Decoy",
+			["pylons"] = {
+				[1] = {
+					["CLSID"] = "{5CE2FF2A-645A-4197-B48D-8720AC69394F}",
+					["num"] = 9,
+				},
+				[2] = {
+					["CLSID"] = "{5CE2FF2A-645A-4197-B48D-8720AC69394F}",
+					["num"] = 1,
+				},
+				[3] = {
+					["CLSID"] = "{40EF17B7-F508-45de-8566-6FFECC0C1AB8}",
+					["num"] = 6,
+				},
+				[4] = {
+					["CLSID"] = "{40EF17B7-F508-45de-8566-6FFECC0C1AB8}",
+					["num"] = 4,
+				},
+				[5] = {
+					["CLSID"] = "{BRU_42A_x3_ADM_141A}",
+					["num"] = 3,
+				},
+				[6] = {
+					["CLSID"] = "{BRU_42A_x3_ADM_141A}",
+					["num"] = 7,
+				},
+				[7] = {
+					["CLSID"] = "{BRU_42A_x3_ADM_141A}",
+					["num"] = 2,
+				},
+				[8] = {
+					["CLSID"] = "{BRU_42A_x3_ADM_141A}",
+					["num"] = 8,
+				},
+			},
+			["tasks"] = {
+				[1] = 29,
+			},
+		},
 	},
 	["tasks"] = {
 	},

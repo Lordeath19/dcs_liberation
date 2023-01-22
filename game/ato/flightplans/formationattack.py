@@ -216,6 +216,8 @@ class FormationAttackBuilder(IBuilder[FlightPlanT, LayoutT], ABC):
             return builder.dead_point(target)
         elif flight.flight_type == FlightType.SEAD:
             return builder.sead_point(target)
+        elif flight.flight_type == FlightType.DECOY:
+            return builder.decoy_point(target)
         else:
             return builder.strike_point(target)
 
@@ -227,6 +229,8 @@ class FormationAttackBuilder(IBuilder[FlightPlanT, LayoutT], ABC):
             return builder.dead_area(location)
         elif flight.flight_type == FlightType.SEAD:
             return builder.sead_area(location)
+        elif flight.flight_type == FlightType.DECOY:
+            return builder.decoy_area(location)
         elif flight.flight_type == FlightType.OCA_AIRCRAFT:
             return builder.oca_strike_area(location)
         else:

@@ -51,6 +51,8 @@ class AircraftBehavior:
             self.configure_dead(group, flight)
         elif self.task == FlightType.SEAD:
             self.configure_sead(group, flight)
+        elif self.task == FlightType.DECOY:
+            self.configure_decoy(group, flight)
         elif self.task == FlightType.SEAD_ESCORT:
             self.configure_sead_escort(group, flight)
         elif self.task == FlightType.STRIKE:
@@ -176,6 +178,23 @@ class AircraftBehavior:
             # ASM includes ARMs and TALDs (among other things, but those are the useful
             # weapons for SEAD).
             rtb_winchester=OptRTBOnOutOfAmmo.Values.ASM,
+            restrict_jettison=True,
+            mission_uses_gun=False,
+        )
+
+    def configure_decoy(self, group: FlyingGroup[Any], flight: Flight) -> None:
+        # CAS is able to perform all the same tasks as SEAD using a superset of the
+        # available aircraft, and F-14s are not able to be SEAD despite having TALDs.
+        # https://forums.eagle.ru/topic/272112-cannot-assign-f-14-to-sead/
+        group.task = CAS.name
+        self.configure_behavior(
+            flight,
+            group,
+            react_on_threat=OptReactOnThreat.Values.EvadeFire,
+            roe=OptROE.Values.OpenFire,
+            # ASM includes ARMs and TALDs (among other things, but those are the useful
+            # weapons for SEAD).
+            rtb_winchester=OptRTBOnOutOfAmmo.Values.All,
             restrict_jettison=True,
             mission_uses_gun=False,
         )

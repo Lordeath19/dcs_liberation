@@ -142,6 +142,7 @@ class LuaGenerator:
                 FlightType.ANTISHIP,
                 FlightType.DEAD,
                 FlightType.SEAD,
+                FlightType.DECOY,
                 FlightType.STRIKE,
             ]:
                 flight_type = str(flight.flight_type)

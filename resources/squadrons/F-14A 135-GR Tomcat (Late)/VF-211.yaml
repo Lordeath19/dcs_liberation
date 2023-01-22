@@ -16,6 +16,7 @@ mission_types:
   - OCA/Aircraft
   - OCA/Runway
   - SEAD
+  - Decoy
   - Strike
   - Fighter sweep
   - TARCAP

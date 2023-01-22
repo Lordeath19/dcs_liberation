@@ -11,6 +11,7 @@ mission_types:
   - BARCAP
   - CAS
   - DEAD
+  - Decoy
   - Escort
   - Intercept
   - OCA/Aircraft

@@ -117,6 +117,8 @@ class QUnitInfoWindow(QDialog):
             )
         if unit_type in game.ato.ai_flight_planner_db.SEAD_CAPABLE:
             aircraft_tasks = aircraft_tasks + f"{FlightType.SEAD}, "
+        if unit_type in game.ato.ai_flight_planner_db.DECOY_CAPABLE:
+            aircraft_tasks = aircraft_tasks + f"{FlightType.DECOY}, "
         if unit_type in game.ato.ai_flight_planner_db.DEAD_CAPABLE:
             aircraft_tasks = aircraft_tasks + f"{FlightType.DEAD}, "
         if unit_type in game.ato.ai_flight_planner_db.ANTISHIP_CAPABLE:

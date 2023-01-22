@@ -159,6 +159,7 @@ class Loadout:
             FlightType.ANTISHIP: ("ANTISHIP",),
             FlightType.DEAD: ("DEAD",),
             FlightType.SEAD: ("SEAD",),
+            FlightType.DECOY: ("DECOY",),
             FlightType.BAI: ("BAI",),
             FlightType.OCA_RUNWAY: ("RUNWAY_ATTACK", "RUNWAY_STRIKE"),
             FlightType.OCA_AIRCRAFT: ("OCA",),
@@ -168,6 +169,7 @@ class Loadout:
         # A SEAD escort typically does not need a different loadout than a regular
         # SEAD flight, so fall back to SEAD if needed.
         loadout_names[FlightType.SEAD_ESCORT].extend(loadout_names[FlightType.SEAD])
+        loadout_names[FlightType.DECOY].extend(loadout_names[FlightType.SEAD])
         # Sweep and escort can fall back to TARCAP.
         loadout_names[FlightType.ESCORT].extend(loadout_names[FlightType.TARCAP])
         loadout_names[FlightType.SWEEP].extend(loadout_names[FlightType.TARCAP])

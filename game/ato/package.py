@@ -163,6 +163,7 @@ class Package:
             FlightType.FERRY,
             FlightType.REFUELING,
             FlightType.SWEEP,
+            FlightType.DECOY,
             FlightType.SEAD_ESCORT,
             FlightType.ESCORT,
         ]

@@ -112,6 +112,7 @@ def load_icons():
     ICONS["TaskCAS"] = QPixmap("./resources/ui/tasks/cas.png")
     ICONS["TaskCAP"] = QPixmap("./resources/ui/tasks/cap.png")
     ICONS["TaskSEAD"] = QPixmap("./resources/ui/tasks/sead.png")
+    ICONS["TaskDecoy"] = QPixmap("./resources/ui/tasks/sead.png")
     ICONS["TaskEmpty"] = QPixmap("./resources/ui/tasks/empty.png")
 
     """

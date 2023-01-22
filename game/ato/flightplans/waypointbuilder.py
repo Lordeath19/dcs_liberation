@@ -277,6 +277,9 @@ class WaypointBuilder:
     def sead_point(self, target: StrikeTarget) -> FlightWaypoint:
         return self._target_point(target, f"STRIKE {target.name}")
 
+    def decoy_point(self, target: StrikeTarget) -> FlightWaypoint:
+        return self._target_point(target, f"STRIKE {target.name}")
+
     def strike_point(self, target: StrikeTarget) -> FlightWaypoint:
         return self._target_point(target, f"STRIKE {target.name}")
 
@@ -302,6 +305,16 @@ class WaypointBuilder:
     def sead_area(self, target: MissionTarget) -> FlightWaypoint:
         # Set flyover with ingress altitude to allow the flight to search and engage
         # the target group at the ingress alt without suicide dive
+        return self._target_area(
+            f"SEAD on {target.name}",
+            target,
+            flyover=True,
+            altitude=self.doctrine.ingress_altitude,
+            alt_type="BARO",
+        )
+
+    def decoy_area(self, target: MissionTarget) -> FlightWaypoint:
+        # Set flyover with ingress altitude to force the flight to maintain appropriate altitude
         return self._target_area(
             f"SEAD on {target.name}",
             target,

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import datetime
 from typing import Any, Iterable, Union
 
 from dcs import Mission
@@ -28,7 +28,7 @@ class PydcsWaypointBuilder:
         group: FlyingGroup[Any],
         flight: Flight,
         mission: Mission,
-        elapsed_mission_time: timedelta,
+        now: datetime,
         mission_data: MissionData,
         unit_map: UnitMap,
     ) -> None:
@@ -37,7 +37,7 @@ class PydcsWaypointBuilder:
         self.package = flight.package
         self.flight = flight
         self.mission = mission
-        self.elapsed_mission_time = elapsed_mission_time
+        self.now = now
         self.mission_data = mission_data
         self.unit_map = unit_map
 
@@ -45,11 +45,11 @@ class PydcsWaypointBuilder:
         waypoint_unit_type = self.flight.unit_type.dcs_unit_type
         unit_type_max_speed = waypoint_unit_type.max_speed
         # Some aircraft support afterburner, we should factor that into our cruise speed adjustments
-        unit_type_factor = 0.5 if unit_type_max_speed > 1500 else 0.85
+        unit_type_max_speed *= 0.5 if unit_type_max_speed > 1500 else 0.85
         waypoint = self.group.add_waypoint(
             self.waypoint.position,
             self.waypoint.alt.meters,
-            unit_type_max_speed * unit_type_factor,
+            unit_type_max_speed,
             name=self.waypoint.name,
         )
 
@@ -73,12 +73,12 @@ class PydcsWaypointBuilder:
     def add_tasks(self, waypoint: MovingPoint) -> None:
         pass
 
-    def set_waypoint_tot(self, waypoint: MovingPoint, tot: timedelta) -> None:
+    def set_waypoint_tot(self, waypoint: MovingPoint, tot: datetime) -> None:
         self.waypoint.tot = tot
         if not self._viggen_client_tot():
-            waypoint.ETA = int((tot - self.elapsed_mission_time).total_seconds())
-            waypoint.ETA_locked = True
-            waypoint.speed_locked = False
+            waypoint.ETA = int((tot - self.now).total_seconds())
+            waypoint.ETA_locked = False
+            waypoint.speed_locked = True
 
     def _viggen_client_tot(self) -> bool:
         """Viggen player aircraft consider any waypoint with a TOT set to be a target ("M") waypoint.

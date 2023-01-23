@@ -180,6 +180,9 @@ class FormationAttackBuilder(IBuilder[FlightPlanT, LayoutT], ABC):
 
         hold = builder.hold(self._hold_point())
         join = builder.join(self.package.waypoints.join)
+        # In case there is a rush (player wants it done asap)
+        if len(self.flight.package.flights) < 2 and self.package.auto_asap:
+            hold.only_for_player = True
         split = builder.split(self.package.waypoints.split)
         refuel = builder.refuel(self.package.waypoints.refuel)
 

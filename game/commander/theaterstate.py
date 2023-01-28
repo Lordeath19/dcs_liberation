@@ -163,10 +163,6 @@ class TheaterState(WorldState["TheaterState"]):
 
         refueling_targets: list[MissionTarget] = []
         theater_refuling_point = finder.preferred_theater_refueling_control_point()
-
-        for carrier in finder.carrier_control_points():
-            refueling_targets.append(carrier)
-
         if theater_refuling_point is not None:
             refueling_targets.append(theater_refuling_point)
 
@@ -190,7 +186,7 @@ class TheaterState(WorldState["TheaterState"]):
                 cp: BattlePositions.for_control_point(cp)
                 for cp in ordered_capturable_points
             },
-            oca_targets=list(finder.oca_targets(min_aircraft=5)),
+            oca_targets=list(finder.oca_targets(min_aircraft=20)),
             strike_targets=list(finder.strike_targets()),
             enemy_barcaps=list(game.theater.control_points_for(not player)),
             threat_zones=game.threat_zone_for(not player),

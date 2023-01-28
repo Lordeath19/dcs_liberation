@@ -13,8 +13,6 @@ from game.theater import (
     FrontLine,
     MissionTarget,
     OffMapSpawn,
-    ControlPointStatus,
-    NavalControlPoint,
 )
 from game.theater.theatergroundobject import (
     BuildingGroundObject,
@@ -96,11 +94,6 @@ class ObjectiveFinder:
         # building).
         found_targets: set[str] = set()
         for enemy_cp in self.enemy_control_points():
-            try:
-                if enemy_cp.ignore_infrastructure:
-                    continue
-            except AttributeError:
-                enemy_cp.ignore_infrastructure = False
             for ground_object in enemy_cp.ground_objects:
                 # TODO: Reuse ground_object.mission_types.
                 # The mission types for ground objects are currently not
@@ -146,23 +139,12 @@ class ObjectiveFinder:
         """Iterates over all active front lines in the theater."""
         yield from self.game.theater.conflicts()
 
-    def vulnerable_front_lines(self) -> Iterator[ControlPoint]:
-        """Iterates over friendly CPs that aren't behind friendly lines"""
-        for cp in self.friendly_control_points():
-            if isinstance(cp, OffMapSpawn):
-                continue
-            if cp.has_active_frontline or cp.is_isolated:
-                yield cp
-
     def vulnerable_control_points(self) -> Iterator[ControlPoint]:
         """Iterates over friendly CPs that are vulnerable to enemy CPs.
 
-        Vulnerability is defined as any enemy CP within threat range of the
+        Vulnerability is defined as any enemy CP within threat range of of the
         CP.
         """
-        if list(self.game.theater.conflicts()):
-            yield from self.vulnerable_front_lines()
-            return
         for cp in self.friendly_control_points():
             if isinstance(cp, OffMapSpawn):
                 # Off-map spawn locations don't need protection.
@@ -176,11 +158,12 @@ class ObjectiveFinder:
             for airfield in airfields_in_threat_range:
                 if not airfield.is_friendly(self.is_player):
                     yield cp
+                    break
 
     def oca_targets(self, min_aircraft: int) -> Iterator[ControlPoint]:
         airfields = []
         for control_point in self.enemy_control_points():
-            if not isinstance(control_point, (Airfield, NavalControlPoint)):
+            if not isinstance(control_point, Airfield):
                 continue
             if control_point.allocated_aircraft().total_present >= min_aircraft:
                 airfields.append(control_point)
@@ -205,10 +188,7 @@ class ObjectiveFinder:
     def friendly_control_points(self) -> Iterator[ControlPoint]:
         """Iterates over all friendly control points."""
         return (
-            c
-            for c in self.game.theater.controlpoints
-            if c.is_friendly(self.is_player)
-            and c.status is not ControlPointStatus.Destroyed
+            c for c in self.game.theater.controlpoints if c.is_friendly(self.is_player)
         )
 
     def farthest_friendly_control_point(self) -> ControlPoint:
@@ -236,9 +216,7 @@ class ObjectiveFinder:
         closest = None
         min_distance = meters(math.inf)
         for cp in self.friendly_control_points():
-            if isinstance(cp, OffMapSpawn) or (
-                cp.is_fleet and cp.runway_status.damaged
-            ):
+            if isinstance(cp, OffMapSpawn) or cp.is_fleet:
                 continue
             distance = threat_zones.distance_to_threat(cp.position)
             if distance < min_distance:
@@ -246,12 +224,6 @@ class ObjectiveFinder:
                 min_distance = distance
 
         return closest
-
-    def carrier_control_points(self) -> Iterator[ControlPoint]:
-        """Finds all friendly carriers."""
-        for cp in self.friendly_control_points():
-            if cp.is_carrier and not cp.runway_status.damaged:
-                yield cp
 
     def enemy_control_points(self) -> Iterator[ControlPoint]:
         """Iterates over all enemy control points."""

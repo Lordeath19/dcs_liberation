@@ -7,6 +7,8 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, TypeVar
 
 from dcs import Point
+from dcs.action import RemoveSceneObjectsMask, RemoveSceneObjects
+from dcs.triggers import Event, TriggerCondition, TriggerOnce, TriggerStart, TriggerZone
 
 from game.flightplan import HoldZoneGeometry
 from game.theater import MissionTarget

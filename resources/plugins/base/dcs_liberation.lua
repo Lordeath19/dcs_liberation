@@ -140,10 +140,30 @@ write_state_error_handling = function()
     mist.scheduleFunction(write_state_error_handling, {}, timer.getTime() + WRITESTATE_SCHEDULE_IN_SECONDS)
 end
 
+local function has_value (tab, val)
+    for index, value in ipairs(tab) do
+        if value == val then
+            return true
+        end
+    end
+
+    return false
+end
+
 activeWeapons = {}
 local function onEvent(event)
-   if event.id == world.event.S_EVENT_CRASH and event.initiator then
+   if event.id == world.event.S_EVENT_CRASH and event.initiator and not has_value(killed_aircrafts, event.initiator:getName()) then
        killed_aircrafts[#killed_aircrafts + 1] = event.initiator.getName(event.initiator)
+       write_state()
+   end
+
+   --Is target a plane/heli on the ground that got hit, if so count it as dead
+   if event.id == world.event.S_EVENT_HIT and
+     event.target and
+     not event.target:inAir() and
+     event.target:hasAttribute("Air") and
+     not has_value(killed_aircrafts, event.target:getName()) then
+       killed_aircrafts[#killed_aircrafts + 1] = event.target:getName()
        write_state()
    end
 

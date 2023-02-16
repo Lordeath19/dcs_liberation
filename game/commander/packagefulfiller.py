@@ -4,6 +4,7 @@ import logging
 from collections import defaultdict
 from typing import Dict, Iterable, Optional, Set, TYPE_CHECKING
 
+from game.ato.ai_flight_planner_db import STANDOFF_CAPABLE
 from game.ato.airtaaskingorder import AirTaskingOrder
 from game.ato.closestairfields import ObjectiveDistanceCache
 from game.ato.flighttype import FlightType
@@ -118,6 +119,8 @@ class PackageFulfiller:
     def check_needed_escorts(self, builder: PackageBuilder) -> Dict[EscortType, bool]:
         threats = defaultdict(bool)
         for flight in builder.package.flights:
+            if flight.unit_type.dcs_unit_type in STANDOFF_CAPABLE:
+                continue
             if self.threat_zones.waypoints_threatened_by_aircraft(
                 flight.flight_plan.escorted_waypoints()
             ):

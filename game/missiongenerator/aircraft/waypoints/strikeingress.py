@@ -10,7 +10,7 @@ from .pydcswaypointbuilder import PydcsWaypointBuilder
 
 class StrikeIngressBuilder(PydcsWaypointBuilder):
     def add_tasks(self, waypoint: MovingPoint) -> None:
-        if self.group.units[0].unit_type in [B_17G, B_52H, Tu_22M3]:
+        if self.group.units[0].unit_type in [B_17G, Tu_22M3]:
             self.add_bombing_tasks(waypoint)
         else:
             self.add_strike_tasks(waypoint)

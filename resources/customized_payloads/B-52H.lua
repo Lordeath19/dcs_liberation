@@ -37,15 +37,15 @@ local unitPayloads = {
 			["name"] = "STRIKE",
 			["pylons"] = {
 				[1] = {
-					["CLSID"] = "{696CFFC4-0BDE-42A8-BE4B-0BE3D9DD723C}",
+					["CLSID"] = "{45447F82-01B5-4029-A572-9AAD28AF0275}",
 					["num"] = 1,
 				},
 				[2] = {
-					["CLSID"] = "{6C47D097-83FF-4FB2-9496-EAB36DDF0B05}",
+					["CLSID"] = "{8DCAF3A3-7FCF-41B8-BB88-58DEDA878EDE}",
 					["num"] = 2,
 				},
 				[3] = {
-					["CLSID"] = "{696CFFC4-0BDE-42A8-BE4B-0BE3D9DD723C}",
+					["CLSID"] = "{45447F82-01B5-4029-A572-9AAD28AF0275}",
 					["num"] = 3,
 				},
 			},

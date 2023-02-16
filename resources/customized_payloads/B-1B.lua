@@ -25,15 +25,15 @@ local unitPayloads = {
 			["name"] = "STRIKE",
 			["pylons"] = {
 				[1] = {
-					["CLSID"] = "B-1B_Mk-84*8",
+					["CLSID"] = "{AABA1A14-78A1-4E85-94DD-463CF75BD9E4}",
 					["num"] = 1,
 				},
 				[2] = {
-					["CLSID"] = "B-1B_Mk-84*8",
+					["CLSID"] = "{AABA1A14-78A1-4E85-94DD-463CF75BD9E4}",
 					["num"] = 2,
 				},
 				[3] = {
-					["CLSID"] = "B-1B_Mk-84*8",
+					["CLSID"] = "{AABA1A14-78A1-4E85-94DD-463CF75BD9E4}",
 					["num"] = 3,
 				},
 			},
@@ -74,16 +74,16 @@ local unitPayloads = {
 			["name"] = "CAS",
 			["pylons"] = {
 				[1] = {
-					["CLSID"] = "CBU97*10",
-					["num"] = 3,
+					["CLSID"] = "{AABA1A14-78A1-4E85-94DD-463CF75BD9E4}",
+					["num"] = 1,
 				},
 				[2] = {
-					["CLSID"] = "CBU97*10",
+					["CLSID"] = "{AABA1A14-78A1-4E85-94DD-463CF75BD9E4}",
 					["num"] = 2,
 				},
 				[3] = {
-					["CLSID"] = "CBU97*10",
-					["num"] = 1,
+					["CLSID"] = "{AABA1A14-78A1-4E85-94DD-463CF75BD9E4}",
+					["num"] = 3,
 				},
 			},
 			["tasks"] = {

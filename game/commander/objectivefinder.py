@@ -158,7 +158,10 @@ class ObjectiveFinder:
             for airfield in airfields_in_threat_range:
                 if not airfield.is_friendly(self.is_player):
                     yield cp
-                    break
+                    return
+            for conflict in self.game.theater.conflicts():
+                if cp in conflict.control_points:
+                    yield cp
 
     def oca_targets(self, min_aircraft: int) -> Iterator[ControlPoint]:
         airfields = []
@@ -216,7 +219,9 @@ class ObjectiveFinder:
         closest = None
         min_distance = meters(math.inf)
         for cp in self.friendly_control_points():
-            if isinstance(cp, OffMapSpawn) or cp.is_fleet:
+            if isinstance(cp, OffMapSpawn) or (
+                cp.is_fleet and cp.runway_status.damaged
+            ):
                 continue
             distance = threat_zones.distance_to_threat(cp.position)
             if distance < min_distance:
@@ -224,6 +229,12 @@ class ObjectiveFinder:
                 min_distance = distance
 
         return closest
+
+    def carrier_control_points(self) -> Iterator[ControlPoint]:
+        """Finds all friendly carriers."""
+        for cp in self.friendly_control_points():
+            if cp.is_carrier and not cp.runway_status.damaged:
+                yield cp
 
     def enemy_control_points(self) -> Iterator[ControlPoint]:
         """Iterates over all enemy control points."""

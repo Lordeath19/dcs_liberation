@@ -532,7 +532,7 @@ class Game:
                 # are only interesting if there are enemies in the area, and if
                 # there are they won't be culled because of the enemy's mission.
                 continue
-            elif package.primary_task is FlightType.AEWC:
+            elif package.primary_task in [FlightType.AEWC, FlightType.REFUELING]:
                 # AWECs will be planned the farthest control point
                 # rendering culling fairly useless. AEWC packages don't really
                 # need the ground detail since they're behind friendly lines. SAMs nearby

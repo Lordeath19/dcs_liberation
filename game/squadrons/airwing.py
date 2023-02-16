@@ -61,12 +61,12 @@ class AirWing:
                         # If it is not already in the list it should be the last one
                         best_aircraft.append(squadron.aircraft)
 
-            ordered.extend(
-                sorted(
-                    capable_at_base,
-                    key=lambda s: best_aircraft.index(s.aircraft),
-                )
-            )
+            ordered.extend(capable_at_base)
+
+        ordered = sorted(
+            ordered,
+            key=lambda s: best_aircraft.index(s.aircraft),
+        )
         return ordered
 
     def best_squadron_for(

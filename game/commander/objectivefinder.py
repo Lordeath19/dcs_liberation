@@ -146,6 +146,11 @@ class ObjectiveFinder:
         CP.
         """
         for cp in self.friendly_control_points():
+            for conflict in self.game.theater.conflicts():
+                if cp in conflict.control_points:
+                    yield cp
+                    return
+        for cp in self.friendly_control_points():
             if isinstance(cp, OffMapSpawn):
                 # Off-map spawn locations don't need protection.
                 continue
@@ -157,10 +162,6 @@ class ObjectiveFinder:
             )
             for airfield in airfields_in_threat_range:
                 if not airfield.is_friendly(self.is_player):
-                    yield cp
-                    return
-            for conflict in self.game.theater.conflicts():
-                if cp in conflict.control_points:
                     yield cp
 
     def oca_targets(self, min_aircraft: int) -> Iterator[ControlPoint]:

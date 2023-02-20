@@ -10,12 +10,13 @@ from dcs.action import (
     ActivateGroup,
     RemoveSceneObjects,
     RemoveSceneObjectsMask,
-    SceneryDestructionZone,
+    ClearFlag,
+    SetFlag,
 )
-from dcs.condition import CoalitionHasAirdrome, TimeAfter
+from dcs.condition import CoalitionHasAirdrome, TimeAfter, TimeSinceFlag
 from dcs.planes import AJS37
 from dcs.task import StartCommand
-from dcs.triggers import Event, TriggerOnce, TriggerRule, TriggerZone, TriggerStart
+from dcs.triggers import Event, TriggerOnce, TriggerRule, TriggerCondition
 from dcs.unitgroup import FlyingGroup
 
 from game.ato import Flight, FlightWaypoint
@@ -79,15 +80,29 @@ class WaypointGenerator:
             hidden=True,
             name=f"RemoveTrees{flight.id}_{waypoint.name}_zone",
         )
-        tree_remover_trigger = TriggerOnce(
+
+        flag_id = random.randint(100, 99999999999)
+        flag_delay = random.randint(120, 300)
+        tree_remover_trigger_flag = TriggerOnce(
+            Event.NoEvent, f"RemoveTrees{flight.id}_{waypoint.name}_init"
+        )
+
+        tree_remover_trigger = TriggerCondition(
             Event.NoEvent, f"RemoveTrees{flight.id}_{waypoint.name}"
         )
-        tree_remover_trigger.add_condition(TimeAfter(10))
+
+        tree_remover_trigger_flag.add_condition(TimeAfter(10))
+        tree_remover_trigger_flag.add_action(SetFlag(flag_id))
+
+        tree_remover_trigger.add_condition(TimeSinceFlag(flag_id, flag_delay))
         tree_remover_trigger.add_action(
             RemoveSceneObjects(
                 RemoveSceneObjectsMask.TREES_ONLY, zone=tree_remover_zone.id
             )
         )
+        tree_remover_trigger.add_action(ClearFlag(flag_id))
+        tree_remover_trigger.add_action(SetFlag(flag_id))
+        self.mission.triggerrules.triggers.append(tree_remover_trigger_flag)
         self.mission.triggerrules.triggers.append(tree_remover_trigger)
 
     def create_waypoints(self) -> tuple[timedelta, list[FlightWaypoint]]:

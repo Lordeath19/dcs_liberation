@@ -316,11 +316,12 @@ DECOY_CAPABLE = [
 
 # Aircraft used for DEAD tasks. Must be capable of the CAS DCS task.
 DEAD_CAPABLE = [
-    B_1B,
     B_52H,
     Tu_160,
     Tu_95MS,
     H_6J,
+    F_117A,
+    B_1B,
     AJS37,
     F_15E,
     F_14B,
@@ -358,6 +359,7 @@ STRIKE_CAPABLE = [
     Su_24M,
     F_15E,
     AJS37,
+    F_117A,
     Tornado_GR4,
     F_16C_50,
     FA_18C_hornet,
@@ -449,10 +451,11 @@ ANTISHIP_CAPABLE = [
 # https://github.com/dcs-liberation/dcs_liberation/issues/1703
 RUNWAY_ATTACK_CAPABLE = [
     H_6J,
-    B_1B,
+    F_117A,
     B_52H,
     Tu_22M3,
     H_6J,
+    B_1B,
     Su_17M4,
     Su_24M,
     Su_34,

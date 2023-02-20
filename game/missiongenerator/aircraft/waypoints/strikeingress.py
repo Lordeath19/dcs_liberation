@@ -1,7 +1,8 @@
 import copy
+import itertools
 
 from dcs import Point
-from dcs.planes import B_17G, B_52H, Tu_22M3
+from dcs.planes import B_17G, Tu_22M3
 from dcs.point import MovingPoint
 from dcs.task import Bombing, Expend, OptFormation, WeaponType
 
@@ -32,7 +33,11 @@ class StrikeIngressBuilder(PydcsWaypointBuilder):
         waypoint.tasks.append(bombing)
 
     def add_strike_tasks(self, waypoint: MovingPoint) -> None:
-        for target in self.waypoint.targets:
+        for count, target in enumerate(itertools.cycle(self.waypoint.targets)):
+            # Place up to 30 bombing points, causing AI to expend all ammunition
+            if count >= 30:
+                return
+
             bombing = Bombing(
                 target.position, weapon_type=WeaponType.Auto, group_attack=True
             )

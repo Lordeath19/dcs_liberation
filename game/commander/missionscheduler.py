@@ -3,12 +3,13 @@ from __future__ import annotations
 import logging
 import random
 from collections import defaultdict
-from datetime import timedelta
-from typing import Iterator, Dict, TYPE_CHECKING
+from datetime import datetime, timedelta
+from typing import Iterator, TYPE_CHECKING, List, Set
 
-from game.theater import MissionTarget
+from game.ato import Package
 from game.ato.flighttype import FlightType
 from game.ato.traveltime import TotEstimator
+from game.theater import MissionTarget
 
 if TYPE_CHECKING:
     from game.coalition import Coalition
@@ -19,7 +20,14 @@ class MissionScheduler:
         self.coalition = coalition
         self.desired_mission_length = desired_mission_length
 
-    def schedule_missions(self) -> None:
+    def all_packages_of_type(self, types: Set[FlightType]) -> List[Package]:
+        return [
+            package
+            for package in self.coalition.ato.packages
+            if package.primary_task in types
+        ]
+
+    def schedule_missions(self, now: datetime) -> None:
         """Identifies and plans mission for the turn."""
 
         def start_time_generator(
@@ -30,12 +38,29 @@ class MissionScheduler:
                 error = random.randint(-margin, margin)
                 yield timedelta(seconds=max(0, time + error))
 
+        theater_types = {
+            FlightType.AEWC,
+        }
+
         dca_types = {
             FlightType.BARCAP,
             FlightType.TARCAP,
         }
 
-        previous_cap_end_time: Dict[MissionTarget, timedelta] = defaultdict(timedelta)
+        aa_types = {
+            FlightType.DECOY,
+            FlightType.DEAD,
+            FlightType.SEAD,
+        }
+
+        oca_types = {
+            FlightType.AIR_ASSAULT,
+            FlightType.OCA_RUNWAY,
+            FlightType.OCA_AIRCRAFT,
+            FlightType.SWEEP,
+        }
+
+        previous_cap_end_time: dict[MissionTarget, datetime] = defaultdict(now.replace)
         non_dca_packages = [
             p for p in self.coalition.ato.packages if p.primary_task not in dca_types
         ]
@@ -46,8 +71,22 @@ class MissionScheduler:
             latest=int(self.desired_mission_length.total_seconds()),
             margin=5 * 60,
         )
-        for package in self.coalition.ato.packages:
-            tot = TotEstimator(package).earliest_tot()
+        ato_sequence = (
+            self.all_packages_of_type(theater_types)
+            + self.all_packages_of_type(aa_types)
+            + self.all_packages_of_type(oca_types)
+        )
+
+        remainder_sequence = [
+            package
+            for package in self.coalition.ato.packages
+            if package not in ato_sequence
+        ]
+
+        # Add rest of packages to ato_sequence
+        ato_sequence.extend(remainder_sequence)
+        for package in ato_sequence:
+            tot = TotEstimator(package).earliest_tot(now)
             if package.primary_task in dca_types:
                 previous_end_time = previous_cap_end_time[package.target]
                 if tot > previous_end_time:
@@ -65,7 +104,7 @@ class MissionScheduler:
                     continue
                 previous_cap_end_time[package.target] = departure_time
             elif package.auto_asap:
-                package.set_tot_asap()
+                package.set_tot_asap(now)
             else:
                 # But other packages should be spread out a bit. Note that take
                 # times are delayed, but all aircraft will become active at

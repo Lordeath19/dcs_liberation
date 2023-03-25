@@ -63,3 +63,4 @@ uvicorn==0.18.2
 virtualenv==20.15.1
 watchgod==0.8.2
 websockets==10.3
+luadata==1.0.5

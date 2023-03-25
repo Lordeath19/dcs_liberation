@@ -39,6 +39,8 @@ from .missiondata import MissionData
 from .tgogenerator import TgoGenerator
 from .triggergenerator import TriggerGenerator
 from .visualsgenerator import VisualsGenerator
+from game.data.warehouse import Warehouse
+from ..data.weapons import WeaponWSType
 
 if TYPE_CHECKING:
     from game import Game
@@ -118,6 +120,7 @@ class MissionGenerator:
 
         # TODO: Shouldn't this be first?
         namegen.reset_numbers()
+        self.setup_mission_warehouses()
         self.mission.save(output)
 
         return self.unit_map
@@ -149,6 +152,23 @@ class MissionGenerator:
         for country in country_dict.keys():
             if country not in belligerents:
                 self.mission.coalition["neutrals"].add_country(country_dict[country]())
+
+    def setup_mission_warehouses(self) -> None:
+        warehouse = Warehouse(self.mission.warehouses)
+
+        all_airports = [
+            control_point.dcs_airport
+            for control_point in self.game.theater.controlpoints
+            if control_point.dcs_airport
+        ]
+        # All weapons liberation is aware of
+        all_weapons = allowed_weapons = WeaponWSType.populate_weapons()
+        if self.game.settings.restrict_weapons_by_date:
+            allowed_weapons = [
+                weapon for weapon in all_weapons if weapon.available_on(self.game.date)
+            ]
+        warehouse.add_to_warehouse(all_airports, allowed_weapons)
+        self.mission.warehouses = warehouse.warehouses
 
     def add_airfields_to_unit_map(self) -> None:
         for control_point in self.game.theater.controlpoints:

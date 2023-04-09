@@ -4,7 +4,7 @@ import logging
 import random
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import Iterator, TYPE_CHECKING, List, Set
+from typing import Iterator, TYPE_CHECKING, List, Set, Dict
 
 from game.ato import Package
 from game.ato.flighttype import FlightType
@@ -27,7 +27,7 @@ class MissionScheduler:
             if package.primary_task in types
         ]
 
-    def schedule_missions(self, now: datetime) -> None:
+    def schedule_missions(self) -> None:
         """Identifies and plans mission for the turn."""
 
         def start_time_generator(
@@ -60,7 +60,7 @@ class MissionScheduler:
             FlightType.SWEEP,
         }
 
-        previous_cap_end_time: dict[MissionTarget, datetime] = defaultdict(now.replace)
+        previous_cap_end_time: Dict[MissionTarget, timedelta] = defaultdict(timedelta)
         non_dca_packages = [
             p for p in self.coalition.ato.packages if p.primary_task not in dca_types
         ]
@@ -86,7 +86,7 @@ class MissionScheduler:
         # Add rest of packages to ato_sequence
         ato_sequence.extend(remainder_sequence)
         for package in ato_sequence:
-            tot = TotEstimator(package).earliest_tot(now)
+            tot = TotEstimator(package).earliest_tot()
             if package.primary_task in dca_types:
                 previous_end_time = previous_cap_end_time[package.target]
                 if tot > previous_end_time:
@@ -104,7 +104,7 @@ class MissionScheduler:
                     continue
                 previous_cap_end_time[package.target] = departure_time
             elif package.auto_asap:
-                package.set_tot_asap(now)
+                package.set_tot_asap()
             else:
                 # But other packages should be spread out a bit. Note that take
                 # times are delayed, but all aircraft will become active at

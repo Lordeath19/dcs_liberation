@@ -53,9 +53,12 @@ class Weapon:
 
     def __setstate__(self, state: dict[str, Any]) -> None:
         # Update any existing models with new data on load.
-        updated = Weapon.with_clsid(state["clsid"])
-        state.update(updated.__dict__)
-        self.__dict__.update(state)
+        try:
+            updated = Weapon.with_clsid(state["clsid"])
+            state.update(updated.__dict__)
+            self.__dict__.update(state)
+        except KeyError:
+            pass
 
     @classmethod
     def register(cls, weapon: Weapon) -> None:

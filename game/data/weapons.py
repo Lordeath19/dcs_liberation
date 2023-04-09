@@ -295,13 +295,16 @@ class WeaponWSType:
     wstype_4: int
 
     #: The CLSID used by DCS.
-    clsids: Optional[list[str]] = None
+    clsids: list[str] = field(default_factory=list)
 
-    def __post_init__(self) -> None:
-        self.wstype_1 = int(self.wstype_1)
-        self.wstype_2 = int(self.wstype_2)
-        self.wstype_3 = int(self.wstype_3)
-        self.wstype_4 = int(self.wstype_4)
+    @staticmethod
+    def from_dict(obj: Any) -> WeaponWSType:
+        _name = str(obj.get("name"))
+        _wstype_1 = int(obj.get("wstype_1"))
+        _wstype_2 = int(obj.get("wstype_2"))
+        _wstype_3 = int(obj.get("wstype_3"))
+        _wstype_4 = int(obj.get("wstype_4"))
+        return WeaponWSType(_name, _wstype_1, _wstype_2, _wstype_3, _wstype_4)
 
     @staticmethod
     def get_wstypes() -> list[WeaponWSType]:
@@ -309,7 +312,7 @@ class WeaponWSType:
         with open(Path("resources/weapons/weapons.csv"), "r") as warehouse_data:
             reader = csv.DictReader(warehouse_data, delimiter=";")
             for weapon in reader:
-                dcs_weapons.append(WeaponWSType(**weapon))
+                dcs_weapons.append(WeaponWSType.from_dict(weapon))
         return dcs_weapons
 
     @staticmethod

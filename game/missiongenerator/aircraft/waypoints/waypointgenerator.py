@@ -73,7 +73,7 @@ class WaypointGenerator:
         self.mission_data = mission_data
         self.unit_map = unit_map
 
-    def remove_waypoint_trees(self, flight: Flight, waypoint: FlightWaypoint):
+    def remove_waypoint_trees(self, flight: Flight, waypoint: FlightWaypoint) -> None:
         tree_remover_zone = self.mission.triggers.add_triggerzone(
             waypoint.position,
             radius=500,

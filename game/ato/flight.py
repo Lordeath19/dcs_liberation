@@ -7,6 +7,8 @@ from typing import Any, List, Optional, TYPE_CHECKING
 from dcs import Point
 from dcs.planes import C_101CC, C_101EB, Su_33
 
+from .flightplans.custom import CustomFlightPlan
+from .flightplans.flightplanbuildertypes import FlightPlanBuilderTypes
 from .flightroster import FlightRoster
 from .flightstate import FlightState, Navigating, Uninitialized
 from .flightstate.killed import Killed
@@ -252,4 +254,12 @@ class Flight(SidcDescribable):
                 results.kill_pilot(self, pilot)
 
     def recreate_flight_plan(self) -> None:
+        new_flight_plan_builder = FlightPlanBuilderTypes.for_flight(self)(self)
+
+        if not type(self._flight_plan_builder) in [
+            type(new_flight_plan_builder),
+            CustomFlightPlan.builder_type(),
+        ]:
+            self._flight_plan_builder = new_flight_plan_builder
+
         self._flight_plan_builder.regenerate()

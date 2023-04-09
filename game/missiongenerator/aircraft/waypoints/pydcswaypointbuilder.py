@@ -43,9 +43,9 @@ class PydcsWaypointBuilder:
 
     def build(self) -> MovingPoint:
         waypoint_unit_type = self.flight.unit_type.dcs_unit_type
-        unit_type_max_speed = waypoint_unit_type.max_speed
+        unit_type_max_speed = waypoint_unit_type.max_speed * 0.85
         # Some aircraft support afterburner, we should factor that into our cruise speed adjustments
-        unit_type_max_speed *= 0.5 if unit_type_max_speed > 1500 else 0.85
+        unit_type_max_speed = min(unit_type_max_speed, 950)
         waypoint = self.group.add_waypoint(
             self.waypoint.position,
             self.waypoint.alt.meters,

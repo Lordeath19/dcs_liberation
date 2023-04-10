@@ -17,7 +17,7 @@ from game.ato.starttype import StartType
 from game.ato.traveltime import GroundSpeed
 from game.naming import namegen
 from game.theater import Airfield, ControlPoint, Fob, NavalControlPoint, OffMapSpawn
-from game.utils import feet, meters
+from game.utils import feet, meters, Distance
 
 WARM_START_HELI_ALT = meters(500)
 WARM_START_ALTITUDE = meters(3000)
@@ -38,6 +38,8 @@ HELI_ALT = 500
 
 
 class FlightGroupSpawner:
+    marshal_stack = MINIMUM_MID_MISSION_SPAWN_ALTITUDE_MSL
+
     def __init__(
         self,
         flight: Flight,
@@ -92,6 +94,11 @@ class FlightGroupSpawner:
     def start_type(self) -> StartType:
         return self.flight.state.spawn_type
 
+    @staticmethod
+    def adjust_alt_marshal() -> Distance:
+        FlightGroupSpawner.marshal_stack += Distance(distance_in_meters=300)
+        return FlightGroupSpawner.marshal_stack
+
     def generate_flight_at_departure(self) -> FlyingGroup[Any]:
         name = namegen.next_aircraft_name(self.country, self.flight)
         cp = self.flight.departure
@@ -137,6 +144,7 @@ class FlightGroupSpawner:
         pos = self.flight.state.estimate_position()
         pos += Vector2(random.randint(100, 1000), random.randint(100, 1000))
         alt, alt_type = self.flight.state.estimate_altitude()
+        alt_type = "BARO"
 
         # We don't know where the ground is, so just make sure that any aircraft
         # spawning at an MSL altitude is spawned at some minimum altitude.
@@ -148,6 +156,7 @@ class FlightGroupSpawner:
         # otherwise planes might crash in trees and stuff.
         if alt_type == "RADIO" and alt < MINIMUM_MID_MISSION_SPAWN_ALTITUDE_AGL:
             alt = MINIMUM_MID_MISSION_SPAWN_ALTITUDE_AGL
+        alt = self.adjust_alt_marshal()
 
         group = self.mission.flight_group(
             country=self.country,
@@ -188,7 +197,7 @@ class FlightGroupSpawner:
     ) -> FlyingGroup[Any]:
         at = origin.position
 
-        alt_type = "RADIO"
+        alt_type = "BARO"
         if isinstance(origin, OffMapSpawn):
             alt = self.flight.flight_plan.waypoints[0].alt
             alt_type = self.flight.flight_plan.waypoints[0].alt_type
@@ -199,7 +208,7 @@ class FlightGroupSpawner:
 
         speed = GroundSpeed.for_flight(self.flight, alt)
         pos = at + Vector2(random.randint(100, 1000), random.randint(100, 1000))
-
+        alt = FlightGroupSpawner.adjust_alt_marshal()
         group = self.mission.flight_group(
             country=self.country,
             name=name,

@@ -1,11 +1,28 @@
 # 6.1.1
 
+## Features/Improvements
+
+* **[Mission Generation]** Added era limitation for ammo, when enabled will limit the ammunition on airfields.
+* **[Mission Generation]** Target waypoints now clear forests in a 1000f radius.
+* **[Mission Generation]** AWACS mission area are no longer excluded from culling.
+* **[Mission Generation]** Single flight packages, set to ASAP, will no longer have a HOLD waypoint.
+* **[Mission Generation]** AI flights spawned in air now have altitude separation
+* **[Mission Generation]** Standoff capable aircraft assigned STRIKE tasks now expend all ammo at INGRESS.
+* **[Engine]** Parked aircraft kills are now tracked after being hit.
+* **[Flight Planner]** Added Decoy mission, FA-18/F-14 can now launch ADM-141 TALDS at target area.
+* **[Flight Planner]** Units now fly at appropriate cruise speeds, increasing speed between waypoints.
+* **[Flight Planning]** Flight planner now respects aircraft priority per task (for example, B-52H used for STRIKE before F-14).
+* **[Flight Planning]** Mission scheduling now favors CAP to launch before CAS (SEAD/STRIKE/BAI/etc)
+* **[Flight Planning]** Flight planner priority increased for radar SAMs.
+* **[UI]** Added buttons for Set ASAP and Clean Waypoints.
+
 ## Fixes
 
 * **[Data]** Fixed unit ID for the KS-19 AAA. KS-19 would not previously generate correctly in missions. A new game is required for this fix to take effect.
 * **[Flight Planning]** Automatic flight planning will no longer accidentally plan a recovery tanker instead of a theater refueling package. This fixes a potential crash during mission generation when opfor plans a refueling task at a sunk carrier. You'll need to skip the current turn to force opfor to replan their flights to get the fix.
 * **[Mission Generation]** Using heliports (airports without any runways) will no longer cause mission generation to fail.
 * **[Mission Generation]** Prevent helicopters from spawning into collisions at FARPs when more than one flight uses the same FARP.
+* **[Mission Generation]** Large aircraft now respect late activation when spawning in small airports.
 
 # 6.1.0
 

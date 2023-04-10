@@ -456,7 +456,7 @@ class QPackagePanel(QGroupBox):
         if not index.isValid():
             logging.error(f"Cannot delete package when no package is selected.")
             return
-        self.package_list.delete_package(index)
+        self.package_list.delete_package([index])
 
 
 class QAirTaskingOrderPanel(QSplitter):

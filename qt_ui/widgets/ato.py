@@ -26,11 +26,13 @@ from PySide2.QtWidgets import (
 )
 
 from game.ato.flight import Flight
+from game.ato.flightwaypointtype import FlightWaypointType
 from game.ato.package import Package
 from game.server import EventStream
 from game.sim import GameUpdateEvents
 from ..delegates import TwoColumnRowDelegate
 from ..models import AtoModel, GameModel, NullListModel, PackageModel
+from ..windows.mission.flight.waypoints.QFlightWaypointTab import QFlightWaypointTab
 
 
 class FlightDelegate(TwoColumnRowDelegate):
@@ -290,6 +292,7 @@ class QPackageList(QListView):
         self.setItemDelegate(PackageDelegate(game_model))
         self.setIconSize(QSize(0, 0))
         self.setSelectionBehavior(QAbstractItemView.SelectItems)
+        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.model().rowsInserted.connect(self.on_new_packages)
         self.doubleClicked.connect(self.on_double_click)
 
@@ -306,8 +309,31 @@ class QPackageList(QListView):
 
         Dialog.open_edit_package_dialog(self.ato_model.get_package_model(index))
 
-    def delete_package(self, index: QModelIndex) -> None:
-        self.ato_model.cancel_or_abort_package_at_index(index)
+    def delete_package(self, indexes: list[QModelIndex]) -> None:
+        for index in indexes:
+            self.ato_model.cancel_or_abort_package_at_index(index)
+
+    def asap_package(self, indexes: list[QModelIndex]) -> None:
+        for index in indexes:
+            self.ato_model.package_at_index(index).auto_asap = True
+            self.ato_model.package_at_index(index).set_tot_asap()
+
+    def clean_package(self, indexes: list[QModelIndex]) -> None:
+        for index in indexes:
+            package = self.ato_model.package_at_index(index)
+            for flight in package.flights:
+                waypoint_tab = QFlightWaypointTab(
+                    self.itemDelegate().game_model.game, package, flight
+                )
+                clean_waypoint_types = [
+                    waypoint
+                    for waypoint in flight.flight_plan.waypoints
+                    if waypoint.waypoint_type
+                    in [FlightWaypointType.LOITER, FlightWaypointType.JOIN]
+                ]
+                for waypoint in clean_waypoint_types:
+                    waypoint_tab.delete_waypoint(waypoint)
+                EventStream.put_nowait(GameUpdateEvents().update_flight(flight))
 
     def on_new_packages(self, _parent: QModelIndex, first: int, _last: int) -> None:
         # Select the newly created pacakges. This should only ever happen due to
@@ -324,16 +350,26 @@ class QPackageList(QListView):
 
     def contextMenuEvent(self, event: QContextMenuEvent) -> None:
         index = self.indexAt(event.pos())
+        selected_indexes = self.selectedIndexes()
 
         menu = QMenu("Menu")
 
-        edit_action = QAction("Edit")
-        edit_action.triggered.connect(lambda: self.edit_package(index))
-        menu.addAction(edit_action)
+        if len(selected_indexes) == 1 or index not in selected_indexes:
+            edit_action = QAction("Edit")
+            edit_action.triggered.connect(lambda: self.edit_package(index))
+            menu.addAction(edit_action)
 
         delete_action = QAction(f"Delete")
-        delete_action.triggered.connect(lambda: self.delete_package(index))
+        delete_action.triggered.connect(lambda: self.delete_package(selected_indexes))
         menu.addAction(delete_action)
+
+        asap_action = QAction(f"Set ASAP")
+        asap_action.triggered.connect(lambda: self.asap_package(selected_indexes))
+        menu.addAction(asap_action)
+
+        clean_action = QAction(f"Clean Waypoints")
+        clean_action.triggered.connect(lambda: self.clean_package(selected_indexes))
+        menu.addAction(clean_action)
 
         menu.exec_(event.globalPos())
 

@@ -4,6 +4,8 @@ from typing import Optional, TYPE_CHECKING
 
 from game.theater import ControlPoint, MissionTarget, OffMapSpawn
 from game.utils import nautical_miles
+from ..ato import FlightType
+from ..ato.ai_flight_planner_db import STANDOFF_CAPABLE
 from ..ato.flight import Flight
 from ..ato.package import Package
 from ..ato.starttype import StartType
@@ -45,6 +47,7 @@ class PackageBuilder:
         caller should return any previously planned flights to the inventory
         using release_planned_aircraft.
         """
+        task = plan.task
         squadron = self.air_wing.best_squadron_for(
             self.package.target, plan.task, plan.num_aircraft, this_turn=True
         )
@@ -61,13 +64,17 @@ class PackageBuilder:
             )
         ):
             start_type = StartType.IN_FLIGHT
-
+        if (
+            task is FlightType.DEAD
+            and squadron.aircraft.dcs_unit_type in STANDOFF_CAPABLE
+        ):
+            task = FlightType.STRIKE
         flight = Flight(
             self.package,
             self.package_country,
             squadron,
             plan.num_aircraft,
-            plan.task,
+            task,
             start_type,
             divert=self.find_divert_field(squadron.aircraft, squadron.location),
         )

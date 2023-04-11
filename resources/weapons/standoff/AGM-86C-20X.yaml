@@ -1,4 +1,5 @@
 name: 20xAGM-86C
+type: Cruise
 year: 1988
 fallback: 8xAGM-86D
 clsids:

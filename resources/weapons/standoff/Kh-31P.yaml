@@ -1,4 +1,5 @@
 name: KH-31P
+type: Cruise
 year: 1988
 fallback: KH-25MPU
 clsids:

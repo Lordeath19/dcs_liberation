@@ -101,6 +101,7 @@ class WeaponType(Enum):
     ARM = "ARM"
     LGB = "LGB"
     TGP = "TGP"
+    CRUISE = "Cruise"
     UNKNOWN = "unknown"
 
 

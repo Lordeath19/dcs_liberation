@@ -99,6 +99,10 @@ class TheaterUnit:
         )
 
     @property
+    def is_munition_interceptor(self) -> bool:
+        return getattr(self.type, "munition_interceptor", False)
+
+    @property
     def icon(self) -> str:
         return self.type.id
 

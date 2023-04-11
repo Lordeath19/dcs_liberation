@@ -187,6 +187,11 @@ class TheaterGroundObject(MissionTarget, SidcDescribable, ABC):
         """Returns True if the ground object contains a unit with working radar SAM."""
         return any(g.max_threat_range(radar_only=True) for g in self.groups)
 
+    @property
+    def has_live_missile_point_defense(self) -> bool:
+        """Returns True if the ground object contains a unit with anti-missile capabilities."""
+        return any(u.alive and u.is_munition_interceptor for u in self.units)
+
     def max_detection_range(self) -> Distance:
         """Calculate the maximum detection range of the ground object"""
         return max((g.max_detection_range() for g in self.groups), default=meters(0))

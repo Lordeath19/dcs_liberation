@@ -1,4 +1,5 @@
 name: 2xAGM-154C JSOW
+type: Cruise
 year: 2005
 fallback: 2xAGM-154A JSOW
 clsids:

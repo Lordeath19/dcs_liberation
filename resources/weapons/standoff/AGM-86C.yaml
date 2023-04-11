@@ -1,4 +1,5 @@
 name: AGM-86C
+type: Cruise
 year: 1988
 fallback: 27xMk 82
 clsids:

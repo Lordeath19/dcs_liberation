@@ -14,6 +14,9 @@
 * **[Flight Planning]** Flight planner now respects aircraft priority per task (for example, B-52H used for STRIKE before F-14).
 * **[Flight Planning]** Mission scheduling now favors CAP to launch before CAS (SEAD/STRIKE/BAI/etc)
 * **[Flight Planning]** Flight planner priority increased for radar SAMs.
+* **[Flight Planning]** Added support for cruise missile runway strikes.
+* **[Flight Planning]** Plan decoy tasks for SAMs with point defense.
+* **[Flight Planning]** CAS can now be called on all ground targets.
 * **[UI]** Added buttons for Set ASAP and Clean Waypoints.
 
 ## Fixes
@@ -23,6 +26,7 @@
 * **[Mission Generation]** Using heliports (airports without any runways) will no longer cause mission generation to fail.
 * **[Mission Generation]** Prevent helicopters from spawning into collisions at FARPs when more than one flight uses the same FARP.
 * **[Mission Generation]** Large aircraft now respect late activation when spawning in small airports.
+* **[Mission Generation]** Aircraft no longer spawn in heli slots and crash.
 
 # 6.1.0
 

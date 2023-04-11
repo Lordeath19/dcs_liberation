@@ -5,7 +5,9 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import TYPE_CHECKING, Type
 
-from game.theater import FrontLine
+from dcs import Point
+
+from game.theater import FrontLine, TheaterGroundObject
 from game.utils import Distance, Speed, kph, meters
 from .ibuilder import IBuilder
 from .invalidobjectivelocation import InvalidObjectiveLocation
@@ -75,17 +77,23 @@ class CasFlightPlan(PatrollingFlightPlan[CasLayout], UiZoneDisplay):
 
 
 class Builder(IBuilder[CasFlightPlan, CasLayout]):
-    def layout(self) -> CasLayout:
-        location = self.package.target
+    def zone(self) -> tuple[Point, Point, Point]:
+        assert self.package.waypoints
+        return (
+            self.package.waypoints.ingress,
+            self.package.target.position,
+            self.package.waypoints.split,
+        )
 
-        if not isinstance(location, FrontLine):
-            raise InvalidObjectiveLocation(self.flight.flight_type, location)
-
+    def frontline(self) -> tuple[Point, Point, Point]:
         from game.missiongenerator.frontlineconflictdescription import (
             FrontLineConflictDescription,
         )
 
-        bounds = FrontLineConflictDescription.frontline_bounds(location, self.theater)
+        assert isinstance(self.package.target, FrontLine)
+        bounds = FrontLineConflictDescription.frontline_bounds(
+            self.package.target, self.theater
+        )
         ingress = bounds.left_position
         center = bounds.center
         egress = bounds.right_position
@@ -94,6 +102,17 @@ class Builder(IBuilder[CasFlightPlan, CasLayout]):
         egress_distance = egress.distance_to_point(self.flight.departure.position)
         if egress_distance < ingress_distance:
             ingress, egress = egress, ingress
+        return ingress, center, egress
+
+    def layout(self) -> CasLayout:
+        location = self.package.target
+
+        if isinstance(location, FrontLine):
+            ingress, center, egress = self.frontline()
+        elif isinstance(location, TheaterGroundObject):
+            ingress, center, egress = self.zone()
+        else:
+            raise InvalidObjectiveLocation(self.flight.flight_type, location)
 
         builder = WaypointBuilder(self.flight, self.coalition)
 

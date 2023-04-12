@@ -18,6 +18,7 @@
 * **[Flight Planning]** Plan decoy tasks for SAMs with point defense.
 * **[Flight Planning]** CAS can now be called on all ground targets.
 * **[UI]** Added buttons for Set ASAP and Clean Waypoints.
+* **[UI]** Added button on control points to ignore infrastructure strikes.
 
 ## Fixes
 

@@ -94,6 +94,11 @@ class ObjectiveFinder:
         # building).
         found_targets: set[str] = set()
         for enemy_cp in self.enemy_control_points():
+            try:
+                if enemy_cp.ignore_infrastructure:
+                    continue
+            except AttributeError:
+                enemy_cp.ignore_infrastructure = False
             for ground_object in enemy_cp.ground_objects:
                 # TODO: Reuse ground_object.mission_types.
                 # The mission types for ground objects are currently not

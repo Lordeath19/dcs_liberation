@@ -8,6 +8,7 @@ from PySide2.QtWidgets import (
     QPushButton,
     QVBoxLayout,
     QWidget,
+    QCheckBox,
 )
 from dcs.ships import Stennis, KUZNECOW
 
@@ -86,6 +87,18 @@ class QBaseMenu2(QDialog):
         bottom_row = QHBoxLayout()
         main_layout.addLayout(bottom_row)
 
+        if not self.cp.captured:
+            self.attack_infrastructure = QCheckBox("Ignore infrastructure")
+            self.attack_infrastructure.setToolTip(
+                "Causes AI to ignore strike targets at the control point"
+            )
+            try:
+                self.attack_infrastructure.setChecked(self.cp.ignore_infrastructure)
+            except AttributeError:
+                self.cp.ignore_infrastructure = False
+            self.attack_infrastructure.toggled.connect(self.set_infrastructure)
+            top_layout.addWidget(self.attack_infrastructure)
+
         if FlightType.OCA_RUNWAY in self.cp.mission_types(for_player=True):
             runway_attack_button = QPushButton("Attack airfield")
             bottom_row.addWidget(runway_attack_button)
@@ -140,6 +153,9 @@ class QBaseMenu2(QDialog):
     @property
     def can_afford_runway_repair(self) -> bool:
         return self.game_model.game.blue.budget >= RUNWAY_REPAIR_COST
+
+    def set_infrastructure(self, ignore_infrastructure: bool) -> None:
+        self.cp.ignore_infrastructure = ignore_infrastructure
 
     def begin_runway_repair(self) -> None:
         if not self.can_afford_runway_repair:

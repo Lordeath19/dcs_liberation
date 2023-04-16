@@ -20,6 +20,7 @@
 * **[Flight Planning]** When desired mission duration is set to minimum, schedule flights ASAP
 * **[UI]** Added buttons for Set ASAP and Clean Waypoints.
 * **[UI]** Added button on control points to ignore infrastructure strikes.
+* **[UI]** Added option to limit how many aircraft are tasked at once per side (limit active aircraft).
 
 ## Fixes
 

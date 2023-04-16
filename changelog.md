@@ -17,6 +17,7 @@
 * **[Flight Planning]** Added support for cruise missile runway strikes.
 * **[Flight Planning]** Plan decoy tasks for SAMs with point defense.
 * **[Flight Planning]** CAS can now be called on all ground targets.
+* **[Flight Planning]** When desired mission duration is set to minimum, schedule flights ASAP
 * **[UI]** Added buttons for Set ASAP and Clean Waypoints.
 * **[UI]** Added button on control points to ignore infrastructure strikes.
 

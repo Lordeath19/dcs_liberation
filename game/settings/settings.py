@@ -235,6 +235,23 @@ class Settings:
             "replenishment for future turns."
         ),
     )
+    #: The maximum number of aircraft a side can have active at one time. Changing this after
+    #: the campaign has started will have no immediate effect; flights already generated
+    #: will not be removed if the limit is lowered and flights will not be
+    #: immediately created if the limit is raised.
+    max_active_aircraft_limit: int = bounded_int_option(
+        "Maximum number of active aircraft per side",
+        CAMPAIGN_MANAGEMENT_PAGE,
+        PILOTS_AND_SQUADRONS_SECTION,
+        default=120,
+        min=0,
+        max=1000,
+        detail=(
+            "Sets the maximum number of active aircraft per side."
+            "Changing this value will not have an immediate effect, but will alter "
+            "planning for future turns. Player generated flights ignore this number"
+        ),
+    )
     #: The number of pilots a squadron can replace per turn.
     squadron_replenishment_rate: int = bounded_int_option(
         "Squadron pilot replenishment rate",

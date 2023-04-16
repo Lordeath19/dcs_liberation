@@ -24,7 +24,9 @@
 
 * **[Data]** Fixed unit ID for the KS-19 AAA. KS-19 would not previously generate correctly in missions. A new game is required for this fix to take effect.
 * **[Flight Planning]** Automatic flight planning will no longer accidentally plan a recovery tanker instead of a theater refueling package. This fixes a potential crash during mission generation when opfor plans a refueling task at a sunk carrier. You'll need to skip the current turn to force opfor to replan their flights to get the fix.
+* **[Flight Planning]** AI no longer plan missions on destroyed objectives (For example AEWC on a destroyed carrier)
 * **[Mission Generation]** Using heliports (airports without any runways) will no longer cause mission generation to fail.
+* **[Mission Generation]** AJS37 now has appropriate loadout for strike missions
 * **[Mission Generation]** Prevent helicopters from spawning into collisions at FARPs when more than one flight uses the same FARP.
 * **[Mission Generation]** Large aircraft now respect late activation when spawning in small airports.
 * **[Mission Generation]** Aircraft no longer spawn in heli slots and crash.

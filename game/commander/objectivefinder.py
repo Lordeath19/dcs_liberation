@@ -13,6 +13,7 @@ from game.theater import (
     FrontLine,
     MissionTarget,
     OffMapSpawn,
+    ControlPointStatus,
 )
 from game.theater.theatergroundobject import (
     BuildingGroundObject,
@@ -197,7 +198,10 @@ class ObjectiveFinder:
     def friendly_control_points(self) -> Iterator[ControlPoint]:
         """Iterates over all friendly control points."""
         return (
-            c for c in self.game.theater.controlpoints if c.is_friendly(self.is_player)
+            c
+            for c in self.game.theater.controlpoints
+            if c.is_friendly(self.is_player)
+            and c.status is not ControlPointStatus.Destroyed
         )
 
     def farthest_friendly_control_point(self) -> ControlPoint:

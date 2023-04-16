@@ -45,6 +45,8 @@ GAMEPLAY_SECTION = "Gameplay"
 # will impact the overall quality of the experience."
 PERFORMANCE_SECTION = "Performance"
 
+MINIMUM_MISSION_DURATION = 30
+
 
 @dataclass
 class Settings:
@@ -391,7 +393,7 @@ class Settings:
         page=MISSION_GENERATOR_PAGE,
         section=GAMEPLAY_SECTION,
         default=timedelta(minutes=60),
-        min=30,
+        min=MINIMUM_MISSION_DURATION,
         max=150,
     )
 

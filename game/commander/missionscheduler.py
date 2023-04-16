@@ -3,12 +3,13 @@ from __future__ import annotations
 import logging
 import random
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Iterator, TYPE_CHECKING, List, Set, Dict
 
 from game.ato import Package
 from game.ato.flighttype import FlightType
 from game.ato.traveltime import TotEstimator
+from game.settings.settings import MINIMUM_MISSION_DURATION
 from game.theater import MissionTarget
 
 if TYPE_CHECKING:
@@ -19,6 +20,9 @@ class MissionScheduler:
     def __init__(self, coalition: Coalition, desired_mission_length: timedelta) -> None:
         self.coalition = coalition
         self.desired_mission_length = desired_mission_length
+        self.auto_asap_all = desired_mission_length == timedelta(
+            minutes=MINIMUM_MISSION_DURATION
+        )
 
     def all_packages_of_type(self, types: Set[FlightType]) -> List[Package]:
         return [
@@ -103,7 +107,7 @@ class MissionScheduler:
                     logging.error(f"Could not determine mission end time for {package}")
                     continue
                 previous_cap_end_time[package.target] = departure_time
-            elif package.auto_asap:
+            elif package.auto_asap or self.auto_asap_all:
                 package.set_tot_asap()
             else:
                 # But other packages should be spread out a bit. Note that take

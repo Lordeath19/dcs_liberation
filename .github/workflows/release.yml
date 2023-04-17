@@ -53,7 +53,7 @@ jobs:
         run: |
           Get-ChildItem -Recurse -Depth 1
           $version = ($env:TAG_NAME -split "/") | Select-Object -Last 1
-          $prerelease = ("2.1.1-alpha3" -match '[^\.\d]').ToString().ToLower()
+          $prerelease = ($version -match '-alpha').ToString().ToLower()
           Write-Host $version
           Write-Host $prerelease
           Write-Output "::set-output name=number::$version"

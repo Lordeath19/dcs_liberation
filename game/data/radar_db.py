@@ -32,6 +32,28 @@ TELARS = {
     AirDefence.Tor_9A331,
     AirDefence.Roland_ADS,
     hds.SAM_SA_17_Buk_M1_2_LN_9A310M1_2,
+    # Ships
+    ALBATROS,
+    CVN_71,
+    CVN_72,
+    CVN_73,
+    CV_1143_5,
+    Forrestal,
+    KUZNECOW,
+    LHA_Tarawa,
+    MOLNIYA,
+    MOSCOW,
+    NEUSTRASH,
+    PERRY,
+    PIOTR,
+    REZKY,
+    Stennis,
+    TICONDEROG,
+    Type_052B,
+    Type_052C,
+    Type_054A,
+    USS_Arleigh_Burke_IIa,
+    VINSON,
 }
 
 TRACK_RADARS = {

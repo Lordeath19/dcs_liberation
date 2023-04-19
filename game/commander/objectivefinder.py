@@ -14,6 +14,7 @@ from game.theater import (
     MissionTarget,
     OffMapSpawn,
     ControlPointStatus,
+    NavalControlPoint,
 )
 from game.theater.theatergroundobject import (
     BuildingGroundObject,
@@ -179,7 +180,7 @@ class ObjectiveFinder:
     def oca_targets(self, min_aircraft: int) -> Iterator[ControlPoint]:
         airfields = []
         for control_point in self.enemy_control_points():
-            if not isinstance(control_point, Airfield):
+            if not isinstance(control_point, (Airfield, NavalControlPoint)):
                 continue
             if control_point.allocated_aircraft().total_present >= min_aircraft:
                 airfields.append(control_point)

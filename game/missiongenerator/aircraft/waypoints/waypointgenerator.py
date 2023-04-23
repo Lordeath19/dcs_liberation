@@ -32,6 +32,7 @@ from game.settings import Settings
 from game.unitmap import UnitMap
 from game.utils import pairwise
 from .baiingress import BaiIngressBuilder
+from .landingrearmpoint import LandingRearmPointBuilder
 from .landingzone import LandingZoneBuilder
 from .casingress import CasIngressBuilder
 from .deadingress import DeadIngressBuilder
@@ -180,6 +181,7 @@ class WaypointGenerator:
             FlightWaypointType.JOIN: JoinPointBuilder,
             FlightWaypointType.SPLIT: SplitPointBuilder,
             FlightWaypointType.LANDING_POINT: LandingPointBuilder,
+            FlightWaypointType.LANDING_REARM_POINT: LandingRearmPointBuilder,
             FlightWaypointType.LOITER: HoldPointBuilder,
             FlightWaypointType.PATROL: RaceTrackEndBuilder,
             FlightWaypointType.PATROL_TRACK: RaceTrackBuilder,
@@ -211,7 +213,10 @@ class WaypointGenerator:
         main_flight_plan: Iterator[FlightWaypoint] = reversed(waypoints)
         try:
             while waypoint := next(main_flight_plan):
-                if waypoint.waypoint_type is FlightWaypointType.LANDING_POINT:
+                if waypoint.waypoint_type in [
+                    FlightWaypointType.LANDING_POINT,
+                    FlightWaypointType.LANDING_REARM_POINT,
+                ]:
                     waypoint.min_fuel = min_fuel
                     main_flight_plan = itertools.chain([waypoint], main_flight_plan)
                     break

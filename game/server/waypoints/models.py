@@ -53,6 +53,7 @@ class FlightWaypointJs(BaseModel):
             FlightWaypointType.BULLSEYE,
             FlightWaypointType.DIVERT,
             FlightWaypointType.LANDING_POINT,
+            FlightWaypointType.LANDING_REARM_POINT,
             FlightWaypointType.TAKEOFF,
             FlightWaypointType.TARGET_POINT,
         }
@@ -74,6 +75,7 @@ class FlightWaypointJs(BaseModel):
             FlightWaypointType.BULLSEYE,
             FlightWaypointType.DIVERT,
             FlightWaypointType.LANDING_POINT,
+            FlightWaypointType.LANDING_REARM_POINT,
             FlightWaypointType.TAKEOFF,
         }
 

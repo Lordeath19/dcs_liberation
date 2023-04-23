@@ -50,7 +50,7 @@ class Builder(CapBuilder[BarCapFlightPlan, PatrollingLayout]):
 
         builder = WaypointBuilder(self.flight, self.coalition)
         start, end = builder.race_track(start_pos, end_pos, patrol_alt)
-
+        arrival, reset = builder.rearm(self.flight.arrival, start)
         return PatrollingLayout(
             departure=builder.takeoff(self.flight.departure),
             nav_to=builder.nav_path(
@@ -61,7 +61,8 @@ class Builder(CapBuilder[BarCapFlightPlan, PatrollingLayout]):
             ),
             patrol_start=start,
             patrol_end=end,
-            arrival=builder.land(self.flight.arrival),
+            arrival=arrival,
+            reset=reset,
             divert=builder.divert(self.flight.divert),
             bullseye=builder.bullseye(),
         )

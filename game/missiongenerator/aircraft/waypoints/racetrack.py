@@ -1,5 +1,6 @@
 import logging
 
+from dcs.action import SetFlag, ClearFlag
 from dcs.point import MovingPoint
 from dcs.task import (
     ActivateBeaconCommand,
@@ -8,6 +9,7 @@ from dcs.task import (
     OrbitAction,
     Tanker,
     Targets,
+    RunScript,
 )
 
 from game.ato import FlightType
@@ -55,13 +57,21 @@ class RaceTrackBuilder(PydcsWaypointBuilder):
             speed=int(flight_plan.patrol_speed.kph),
         )
 
+        reset_flag_action = RunScript(
+            f"""
+        trigger.action.setUserFlag(${id(self.package)}, false)
+        trigger.action.setUserFlag(${id(self.package)}, true)
+        """
+        )
+        waypoint.add_task(reset_flag_action)
         racetrack = ControlledTask(orbit)
         self.set_waypoint_tot(waypoint, flight_plan.patrol_start_time)
         loiter_duration = flight_plan.patrol_end_time - self.elapsed_mission_time
         elapsed = int(loiter_duration.total_seconds())
-        racetrack.stop_after_time(elapsed)
         # What follows is some code to cope with the broken 'stop after time' condition
-        create_stop_orbit_trigger(racetrack, self.package, self.mission, elapsed)
+        create_stop_orbit_trigger(
+            self.waypoint, self.flight, self.group, self.mission, elapsed
+        )
         # end of hotfix
         waypoint.add_task(racetrack)
 

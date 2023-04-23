@@ -73,7 +73,8 @@ class Builder(IBuilder[AewcFlightPlan, PatrollingLayout]):
         else:
             altitude = feet(25000)
 
-        racetrack = builder.race_track(racetrack_start, racetrack_end, altitude)
+        start, end = builder.race_track(racetrack_start, racetrack_end, altitude)
+        arrival, reset = builder.rearm(self.flight.arrival, start)
 
         return PatrollingLayout(
             departure=builder.takeoff(self.flight.departure),
@@ -83,9 +84,10 @@ class Builder(IBuilder[AewcFlightPlan, PatrollingLayout]):
             nav_from=builder.nav_path(
                 racetrack_end, self.flight.arrival.position, altitude
             ),
-            patrol_start=racetrack[0],
-            patrol_end=racetrack[1],
-            arrival=builder.land(self.flight.arrival),
+            patrol_start=start,
+            patrol_end=end,
+            arrival=arrival,
+            reset=reset,
             divert=builder.divert(self.flight.divert),
             bullseye=builder.bullseye(),
         )

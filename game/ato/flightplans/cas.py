@@ -32,6 +32,11 @@ class CasLayout(PatrollingLayout):
         yield self.patrol_end
         yield from self.nav_from
         yield self.arrival
+        try:
+            if self.reset is not None:
+                yield self.reset
+        except AttributeError:
+            ...
         if self.divert is not None:
             yield self.divert
         yield self.bullseye
@@ -121,6 +126,8 @@ class Builder(IBuilder[CasFlightPlan, CasLayout]):
             self.doctrine.ingress_altitude if not is_helo else meters(50)
         )
         use_agl_ingress_egress = is_helo
+        start = builder.ingress(FlightWaypointType.INGRESS_CAS, ingress, location)
+        arrival, reset = builder.rearm(self.flight.arrival, start)
 
         return CasLayout(
             departure=builder.takeoff(self.flight.departure),
@@ -136,12 +143,11 @@ class Builder(IBuilder[CasFlightPlan, CasLayout]):
                 ingress_egress_altitude,
                 use_agl_ingress_egress,
             ),
-            patrol_start=builder.ingress(
-                FlightWaypointType.INGRESS_CAS, ingress, location
-            ),
+            patrol_start=start,
             target=builder.cas(center),
             patrol_end=builder.egress(egress, location),
-            arrival=builder.land(self.flight.arrival),
+            arrival=arrival,
+            reset=reset,
             divert=builder.divert(self.flight.divert),
             bullseye=builder.bullseye(),
         )

@@ -51,3 +51,4 @@ class FlightWaypointType(IntEnum):
     INGRESS_AIR_ASSAULT = 31
     RECOVERY_TANKER = 32
     INGRESS_DECOY = 33
+    LANDING_REARM_POINT = 34

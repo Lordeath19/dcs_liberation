@@ -28,6 +28,11 @@ class TarCapLayout(PatrollingLayout):
             yield self.refuel
         yield from self.nav_from
         yield self.arrival
+        try:
+            if self.reset is not None:
+                yield self.reset
+        except AttributeError:
+            ...
         if self.divert is not None:
             yield self.divert
         yield self.bullseye
@@ -110,6 +115,7 @@ class Builder(CapBuilder[TarCapFlightPlan, TarCapLayout]):
         if self.package.waypoints is not None:
             refuel = builder.refuel(self.package.waypoints.refuel)
             nav_from_origin = refuel.position
+        arrival, reset = builder.rearm(self.flight.arrival, start)
 
         return TarCapLayout(
             departure=builder.takeoff(self.flight.departure),
@@ -122,7 +128,8 @@ class Builder(CapBuilder[TarCapFlightPlan, TarCapLayout]):
             patrol_start=start,
             patrol_end=end,
             refuel=refuel,
-            arrival=builder.land(self.flight.arrival),
+            arrival=arrival,
+            reset=reset,
             divert=builder.divert(self.flight.divert),
             bullseye=builder.bullseye(),
         )

@@ -93,7 +93,10 @@ class InFlight(FlightState, ABC):
         from .navigating import Navigating
 
         new_index = self.waypoint_index + 1
-        if self.next_waypoint.waypoint_type is FlightWaypointType.LANDING_POINT:
+        if self.next_waypoint.waypoint_type in [
+            FlightWaypointType.LANDING_POINT,
+            FlightWaypointType.LANDING_REARM_POINT,
+        ]:
             return Completed(self.flight, self.settings)
         if self.next_waypoint.waypoint_type is FlightWaypointType.PATROL_TRACK:
             return RaceTrack(self.flight, self.settings, new_index)

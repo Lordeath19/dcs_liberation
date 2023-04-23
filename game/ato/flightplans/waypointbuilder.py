@@ -87,6 +87,55 @@ class WaypointBuilder:
             pretty_name="Takeoff",
         )
 
+    def rearm(
+        self, arrival: ControlPoint, reset_waypoint: FlightWaypoint
+    ) -> Tuple[FlightWaypoint, FlightWaypoint | None]:
+        """Create rearm waypoint for the given arrival airfield or carrier, afterwards go to reset_waypoint.
+
+        Args:
+            arrival: Arrival airfield or carrier.
+            reset_waypoint: Waypoint to reset to after rearming
+        """
+        position = arrival.position
+        if isinstance(arrival, OffMapSpawn):
+            # Off map units shouldn't be able to rearm as they are entering the theater from "far away"
+            return (
+                FlightWaypoint(
+                    "NAV",
+                    FlightWaypointType.NAV,
+                    position,
+                    meters(500) if self.is_helo else self.doctrine.rendezvous_altitude,
+                    description="Exit theater",
+                    pretty_name="Exit theater",
+                ),
+                None,
+            )
+
+        reset_waypoint_copy = FlightWaypoint(
+            "RESET",
+            reset_waypoint.waypoint_type,
+            position=reset_waypoint.position,
+            alt=reset_waypoint.alt,
+            alt_type=reset_waypoint.alt_type,
+            description="Loop Waypoint",
+            pretty_name="Loop Tasking",
+            control_point=reset_waypoint.control_point,
+        )
+
+        return (
+            FlightWaypoint(
+                "REARM",
+                FlightWaypointType.LANDING_REARM_POINT,
+                position,
+                meters(0),
+                alt_type="RADIO",
+                description="Refuel and rearm",
+                pretty_name="Refuel and rearm",
+                control_point=arrival,
+            ),
+            reset_waypoint_copy,
+        )
+
     def land(self, arrival: ControlPoint) -> FlightWaypoint:
         """Create descent waypoint for the given arrival airfield or carrier.
 

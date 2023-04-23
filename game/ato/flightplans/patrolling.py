@@ -22,6 +22,7 @@ class PatrollingLayout(StandardLayout):
     patrol_start: FlightWaypoint
     patrol_end: FlightWaypoint
     nav_from: list[FlightWaypoint]
+    reset: FlightWaypoint | None
 
     def iter_waypoints(self) -> Iterator[FlightWaypoint]:
         yield self.departure
@@ -30,6 +31,11 @@ class PatrollingLayout(StandardLayout):
         yield self.patrol_end
         yield from self.nav_from
         yield self.arrival
+        try:
+            if self.reset is not None:
+                yield self.reset
+        except AttributeError:
+            ...
         if self.divert is not None:
             yield self.divert
         yield self.bullseye

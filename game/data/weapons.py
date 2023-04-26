@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import csv
 import datetime
 import inspect
 import logging
@@ -12,7 +11,7 @@ from typing import Iterator, Optional, Any, ClassVar
 
 import yaml
 from dcs.unitgroup import FlyingGroup
-from dcs.weapons_data import weapon_ids, Weapons
+from dcs.weapons_data import weapon_ids
 
 from game.dcs.aircrafttype import AircraftType
 
@@ -53,12 +52,9 @@ class Weapon:
 
     def __setstate__(self, state: dict[str, Any]) -> None:
         # Update any existing models with new data on load.
-        try:
-            updated = Weapon.with_clsid(state["clsid"])
-            state.update(updated.__dict__)
-            self.__dict__.update(state)
-        except KeyError:
-            pass
+        updated = Weapon.with_clsid(state["clsid"])
+        state.update(updated.__dict__)
+        self.__dict__.update(state)
 
     @classmethod
     def register(cls, weapon: Weapon) -> None:
@@ -101,7 +97,6 @@ class WeaponType(Enum):
     ARM = "ARM"
     LGB = "LGB"
     TGP = "TGP"
-    CRUISE = "Cruise"
     DECOY = "decoy"
     UNKNOWN = "unknown"
 
@@ -281,105 +276,3 @@ class Pylon:
     def iter_pylons(cls, aircraft: AircraftType) -> Iterator[Pylon]:
         for pylon in sorted(list(aircraft.dcs_unit_type.pylons)):
             yield cls.for_aircraft(aircraft, pylon)
-
-
-@dataclass
-class WeaponWSType:
-    """Wrapper for DCS weapons."""
-
-    #: Name of the weapon
-    name: str
-
-    #: WsTypes for dcs
-    wstype_1: int
-    wstype_2: int
-    wstype_3: int
-    wstype_4: int
-
-    #: The CLSID used by DCS.
-    clsids: list[str] = field(default_factory=list)
-
-    @staticmethod
-    def from_dict(obj: Any) -> WeaponWSType:
-        _name = str(obj.get("name"))
-        _wstype_1 = int(obj.get("wstype_1"))
-        _wstype_2 = int(obj.get("wstype_2"))
-        _wstype_3 = int(obj.get("wstype_3"))
-        _wstype_4 = int(obj.get("wstype_4"))
-        return WeaponWSType(_name, _wstype_1, _wstype_2, _wstype_3, _wstype_4)
-
-    @staticmethod
-    def get_wstypes() -> list[WeaponWSType]:
-        dcs_weapons = list()
-        with open(Path("resources/weapons/weapons.csv"), "r") as warehouse_data:
-            reader = csv.DictReader(warehouse_data, delimiter=";")
-            for weapon in reader:
-                dcs_weapons.append(WeaponWSType.from_dict(weapon))
-        return dcs_weapons
-
-    @staticmethod
-    def get_clsid_mapping() -> dict[str, str]:
-        weapon_members = [
-            attr
-            for attr in dir(Weapons)
-            if not callable(getattr(Weapons, attr)) and not attr.startswith("__")
-        ]
-        weapons_data = dict()
-        for i in weapon_members:
-            weapon = getattr(Weapons, i)
-            weapons_data[weapon["name"].lower()] = weapon["clsid"]
-        return weapons_data
-
-    def get_clsids(self, filter_unregistered: bool = True) -> list[str]:
-        weapon_data = self.get_clsid_mapping()
-        weapon_names = [
-            weapon_name
-            for weapon_name in weapon_data.keys()
-            if self.name.lower() in weapon_name.lower()
-        ]
-        clsids = [weapon_data[weapon_name] for weapon_name in weapon_names]
-        if filter_unregistered:
-            return self.filter_unregistered_weapons(clsids)
-        return clsids
-
-    def available_on(self, date: datetime.date) -> bool:
-        weapons = self.weapon_with_clsid()
-        if weapons is None:
-            return False
-        earliest_weapon = min(
-            weapons,
-            key=lambda weapon: weapon.weapon_group.introduction_year or float("inf"),
-        )
-        return earliest_weapon.available_on(date)
-
-    def weapon_with_clsid(self) -> Optional[list[Weapon]]:
-        return [Weapon.with_clsid(weapon_clsid) for weapon_clsid in self.clsids]
-
-    @staticmethod
-    def filter_unregistered_weapons(clsids: list[str]) -> list[str]:
-        # At least one of the weapons are registered with an era limitation
-        # remove non-limited weapons in group
-        weapons = [Weapon.with_clsid(weapon_clsid) for weapon_clsid in clsids]
-        if any(
-            [
-                weapon_object
-                for weapon_object in weapons
-                if weapon_object.weapon_group.introduction_year
-            ]
-        ):
-            return [
-                weapon_object.clsid
-                for weapon_object in weapons
-                if weapon_object.weapon_group.introduction_year
-            ]
-        return clsids
-
-    @staticmethod
-    def populate_weapons() -> list[WeaponWSType]:
-        dcs_weapons = WeaponWSType.get_wstypes()
-        populated_weapons = list()
-        for dcs_weapon in dcs_weapons:
-            dcs_weapon.clsids = dcs_weapon.get_clsids()
-            if dcs_weapon.clsids:
-                populated_weapons.append(dcs_weapon)
-        return populated_weapons

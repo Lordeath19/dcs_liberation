@@ -12,6 +12,7 @@ from dcs.task import (
 )
 from game.ato.flightstate import InFlight
 from game.data.weapons import WeaponType
+
 from game.theater import TheaterGroundObject
 from .pydcswaypointbuilder import PydcsWaypointBuilder
 
@@ -42,8 +43,8 @@ class SeadIngressBuilder(PydcsWaypointBuilder):
                 # if it is found only. This will prevent AI from having huge problems
                 # when skynet is enabled and the Radar is not emitting. They dive
                 # into the SAM instead of waiting for it to come alive
-                engage_task = EngageGroup(miz_group.id)
-                engage_task.params["weaponType"] = DcsWeaponType.Guided.value
+                engage_task = EngageGroup(miz_group.id, visible=True)
+                engage_task.params["weaponType"] = DcsWeaponType.ARM.value
                 engage_task.params["groupAttack"] = True
                 engage_task.params["expend"] = Expend.All.value
                 waypoint.tasks.append(engage_task)

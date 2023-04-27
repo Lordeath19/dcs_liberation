@@ -31,6 +31,7 @@ class PydcsWaypointBuilder:
         elapsed_mission_time: timedelta,
         mission_data: MissionData,
         unit_map: UnitMap,
+        generated_waypoint_idx: int,
     ) -> None:
         self.waypoint = waypoint
         self.group = group
@@ -40,6 +41,7 @@ class PydcsWaypointBuilder:
         self.elapsed_mission_time = elapsed_mission_time
         self.mission_data = mission_data
         self.unit_map = unit_map
+        self.generated_waypoint_idx = generated_waypoint_idx
 
     def build(self) -> MovingPoint:
         waypoint_unit_type = self.flight.unit_type.dcs_unit_type

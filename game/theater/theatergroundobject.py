@@ -164,7 +164,6 @@ class TheaterGroundObject(MissionTarget, SidcDescribable, ABC):
         else:
             yield from [
                 FlightType.STRIKE,
-                FlightType.BAI,
                 FlightType.REFUELING,
                 FlightType.CAS,
             ]
@@ -589,6 +588,13 @@ class VehicleGroupGroundObject(TheaterGroundObject):
     @property
     def should_head_to_conflict(self) -> bool:
         return True
+
+    def mission_types(self, for_player: bool) -> Iterator[FlightType]:
+        from game.ato import FlightType
+
+        if not self.is_friendly(for_player):
+            yield FlightType.BAI
+        yield from super().mission_types(for_player)
 
 
 class EwrGroundObject(IadsGroundObject):

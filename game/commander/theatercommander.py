@@ -54,8 +54,9 @@ https://en.wikipedia.org/wiki/Hierarchical_task_network
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Sequence
 
+from game.ato import Flight
 from game.ato.starttype import StartType
 from game.commander.tasks.compound.nextaction import PlanNextAction
 from game.commander.tasks.theatercommandertask import TheaterCommanderTask
@@ -83,7 +84,19 @@ class TheaterCommander(Planner[TheaterState, TheaterCommanderTask]):
             result = self.plan(state)
             if result is None:
                 # Planned all viable tasks this turn.
-                return
+                break
             for task in result.tasks:
                 task.execute(self.game.coalition_for(self.player))
             state = result.end_state
+        self.fill_mission_reserves()
+
+    @staticmethod
+    def fill_flight(flights: Sequence[Flight]):
+        for flight in flights:
+            while flight.count < 4 and flight.squadron.untasked_aircraft > 0:
+                flight.resize(flight.count + 1)
+
+    def fill_mission_reserves(self) -> None:
+        coalition = self.game.coalition_for(self.player)
+        for package in coalition.ato.packages:
+            self.fill_flight(package.flights)

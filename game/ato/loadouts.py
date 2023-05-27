@@ -178,8 +178,8 @@ class Loadout:
         # OCA/Aircraft falls back to BAI, which falls back to CAS.
         loadout_names[FlightType.BAI].extend(loadout_names[FlightType.CAS])
         loadout_names[FlightType.OCA_AIRCRAFT].extend(loadout_names[FlightType.BAI])
-        # DEAD also falls back to BAI.
-        loadout_names[FlightType.DEAD].extend(loadout_names[FlightType.BAI])
+        # DEAD also falls back to STRIKE.
+        loadout_names[FlightType.DEAD].extend(loadout_names[FlightType.STRIKE])
         # OCA/Runway falls back to Strike
         loadout_names[FlightType.OCA_RUNWAY].extend(loadout_names[FlightType.STRIKE])
         yield from loadout_names[task]

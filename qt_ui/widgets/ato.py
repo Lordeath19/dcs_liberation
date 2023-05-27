@@ -303,7 +303,9 @@ class QPackageList(QListView):
     def asap_package(self, indexes: list[QModelIndex]) -> None:
         for index in indexes:
             self.ato_model.package_at_index(index).auto_asap = True
-            self.ato_model.package_at_index(index).set_tot_asap()
+            self.ato_model.package_at_index(index).set_tot_asap(
+                self.itemDelegate().game_model.sim_controller.current_time_in_sim
+            )
 
     def clean_package(self, indexes: list[QModelIndex]) -> None:
         for index in indexes:

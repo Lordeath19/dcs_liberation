@@ -36,7 +36,6 @@ INGRESS_TYPES = {
     FlightWaypointType.INGRESS_CAS,
     FlightWaypointType.INGRESS_ESCORT,
     FlightWaypointType.INGRESS_SEAD,
-    FlightWaypointType.INGRESS_DECOY,
     FlightWaypointType.INGRESS_STRIKE,
     FlightWaypointType.INGRESS_DEAD,
 }

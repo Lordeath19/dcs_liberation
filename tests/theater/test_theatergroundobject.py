@@ -95,13 +95,14 @@ def test_mission_types_enemy(mocker: Any) -> None:
         control_point=dummy_control_point,
     )
     mission_types = list(building.mission_types(for_player=False))
-    assert len(mission_types) == 6
+    assert len(mission_types) == 7
     assert FlightType.STRIKE in mission_types
     assert FlightType.REFUELING in mission_types
     assert FlightType.ESCORT in mission_types
     assert FlightType.TARCAP in mission_types
     assert FlightType.SEAD_ESCORT in mission_types
     assert FlightType.SWEEP in mission_types
+    assert FlightType.CAS in mission_types
 
     iads_building = IadsBuildingGroundObject(
         name="test",
@@ -110,7 +111,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
         control_point=dummy_control_point,
     )
     mission_types = list(iads_building.mission_types(for_player=False))
-    assert len(mission_types) == 7
+    assert len(mission_types) == 8
     assert FlightType.STRIKE in mission_types
     assert FlightType.REFUELING in mission_types
     assert FlightType.ESCORT in mission_types
@@ -118,6 +119,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
     assert FlightType.SEAD_ESCORT in mission_types
     assert FlightType.SWEEP in mission_types
     assert FlightType.DEAD in mission_types
+    assert FlightType.CAS in mission_types
 
     for ground_object_type in [
         CarrierGroundObject,
@@ -130,7 +132,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
             control_point=dummy_control_point,
         )
         mission_types = list(ground_object.mission_types(for_player=False))
-        assert len(mission_types) == 7
+        assert len(mission_types) == 8
         assert FlightType.ANTISHIP in mission_types
         assert FlightType.STRIKE in mission_types
         assert FlightType.REFUELING in mission_types
@@ -138,6 +140,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
         assert FlightType.TARCAP in mission_types
         assert FlightType.SEAD_ESCORT in mission_types
         assert FlightType.SWEEP in mission_types
+        assert FlightType.CAS in mission_types
 
     sam = SamGroundObject(
         name="test",
@@ -145,7 +148,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
         control_point=dummy_control_point,
     )
     mission_types = list(sam.mission_types(for_player=False))
-    assert len(mission_types) == 8
+    assert len(mission_types) == 9
     assert FlightType.DEAD in mission_types
     assert FlightType.SEAD in mission_types
     assert FlightType.STRIKE in mission_types
@@ -154,6 +157,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
     assert FlightType.TARCAP in mission_types
     assert FlightType.SEAD_ESCORT in mission_types
     assert FlightType.SWEEP in mission_types
+    assert FlightType.CAS in mission_types
 
     ewr = EwrGroundObject(
         name="test",
@@ -161,7 +165,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
         control_point=dummy_control_point,
     )
     mission_types = list(ewr.mission_types(for_player=False))
-    assert len(mission_types) == 7
+    assert len(mission_types) == 8
     assert FlightType.DEAD in mission_types
     assert FlightType.STRIKE in mission_types
     assert FlightType.REFUELING in mission_types
@@ -169,6 +173,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
     assert FlightType.TARCAP in mission_types
     assert FlightType.SEAD_ESCORT in mission_types
     assert FlightType.SWEEP in mission_types
+    assert FlightType.CAS in mission_types
 
     for ground_object_type in [  # type: ignore
         CoastalSiteGroundObject,
@@ -180,13 +185,14 @@ def test_mission_types_enemy(mocker: Any) -> None:
             control_point=dummy_control_point,
         )
         mission_types = list(ground_object.mission_types(for_player=False))
-        assert len(mission_types) == 6
+        assert len(mission_types) == 7
         assert FlightType.STRIKE in mission_types
         assert FlightType.REFUELING in mission_types
         assert FlightType.ESCORT in mission_types
         assert FlightType.TARCAP in mission_types
         assert FlightType.SEAD_ESCORT in mission_types
         assert FlightType.SWEEP in mission_types
+        assert FlightType.CAS in mission_types
 
     vehicles = VehicleGroupGroundObject(
         name="test",
@@ -194,7 +200,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
         control_point=dummy_control_point,
     )
     mission_types = list(vehicles.mission_types(for_player=False))
-    assert len(mission_types) == 7
+    assert len(mission_types) == 8
     assert FlightType.BAI in mission_types
     assert FlightType.STRIKE in mission_types
     assert FlightType.REFUELING in mission_types
@@ -202,3 +208,4 @@ def test_mission_types_enemy(mocker: Any) -> None:
     assert FlightType.TARCAP in mission_types
     assert FlightType.SEAD_ESCORT in mission_types
     assert FlightType.SWEEP in mission_types
+    assert FlightType.CAS in mission_types

@@ -40,8 +40,6 @@ class PlanDead(PackagePlanningTask[IadsGroundObject]):
         # package is *only* threatened by the target though. Could be improved, but
         # needs a decent refactor to the escort planning to do so.
         if self.target.has_live_radar_sam:
-            if self.target.has_live_missile_point_defense:
-                self.propose_flight(FlightType.DECOY, 2, EscortType.Sead)
             self.propose_flight(FlightType.SEAD, 2, EscortType.Sead)
         else:
             self.propose_flight(FlightType.SEAD_ESCORT, 2, EscortType.Sead)

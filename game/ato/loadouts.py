@@ -162,7 +162,6 @@ class Loadout:
             FlightType.ANTISHIP: ("ANTISHIP",),
             FlightType.DEAD: ("DEAD",),
             FlightType.SEAD: ("SEAD",),
-            FlightType.DECOY: ("DECOY",),
             FlightType.BAI: ("BAI",),
             FlightType.OCA_RUNWAY: ("RUNWAY_ATTACK", "RUNWAY_STRIKE"),
             FlightType.OCA_AIRCRAFT: ("OCA",),
@@ -172,7 +171,6 @@ class Loadout:
         # A SEAD escort typically does not need a different loadout than a regular
         # SEAD flight, so fall back to SEAD if needed.
         loadout_names[FlightType.SEAD_ESCORT].extend(loadout_names[FlightType.SEAD])
-        loadout_names[FlightType.DECOY].extend(loadout_names[FlightType.SEAD])
         # Sweep and escort can fall back to TARCAP.
         loadout_names[FlightType.ESCORT].extend(loadout_names[FlightType.TARCAP])
         loadout_names[FlightType.SWEEP].extend(loadout_names[FlightType.TARCAP])
@@ -181,8 +179,8 @@ class Loadout:
         # OCA/Aircraft falls back to BAI, which falls back to CAS.
         loadout_names[FlightType.BAI].extend(loadout_names[FlightType.CAS])
         loadout_names[FlightType.OCA_AIRCRAFT].extend(loadout_names[FlightType.BAI])
-        # DEAD also falls back to BAI.
-        loadout_names[FlightType.DEAD].extend(loadout_names[FlightType.BAI])
+        # DEAD also falls back to STRIKE.
+        loadout_names[FlightType.DEAD].extend(loadout_names[FlightType.STRIKE])
         # OCA/Runway falls back to Strike
         loadout_names[FlightType.OCA_RUNWAY].extend(loadout_names[FlightType.STRIKE])
         yield from loadout_names[task]

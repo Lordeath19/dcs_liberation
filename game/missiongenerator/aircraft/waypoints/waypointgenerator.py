@@ -46,7 +46,6 @@ from .racetrack import RaceTrackBuilder
 from .racetrackend import RaceTrackEndBuilder
 from .refuel import RefuelPointBuilder
 from .seadingress import SeadIngressBuilder
-from .decoyingress import DecoyIngressBuilder
 from .splitpoint import SplitPointBuilder
 from .strikeingress import StrikeIngressBuilder
 from .sweepingress import SweepIngressBuilder
@@ -69,6 +68,7 @@ class WaypointGenerator:
         self.time = time
         self.settings = settings
         self.mission_data = mission_data
+        self.unit_map = unit_map
         self.unit_map = unit_map
 
     def remove_waypoint_trees(self, flight: Flight, waypoint: FlightWaypoint) -> None:

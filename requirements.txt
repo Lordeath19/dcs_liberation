@@ -32,7 +32,7 @@ platformdirs==2.6.2
 pluggy==1.0.0
 pre-commit==2.21.0
 pydantic==1.10.7
-git+https://github.com/pydcs/dcs@8fdeda106ba7e847a5d0a1ed358a1463636b513d#egg=pydcs
+git+https://github.com/pydcs/dcs@48d523d1dd1fc9e0066b629c781c8b092130c0a0#egg=pydcs
 pyinstaller==5.7.0
 pyinstaller-hooks-contrib==2022.14
 pyproj==3.4.1
@@ -63,3 +63,4 @@ uvicorn==0.20.0
 virtualenv==20.17.1
 watchfiles==0.18.1
 websockets==10.4
+luadata==1.0.5

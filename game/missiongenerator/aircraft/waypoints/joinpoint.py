@@ -18,8 +18,9 @@ from .pydcswaypointbuilder import PydcsWaypointBuilder
 class JoinPointBuilder(PydcsWaypointBuilder):
     def add_tasks(self, waypoint: MovingPoint) -> None:
         if self.flight.flight_type == FlightType.ESCORT:
+            # Escort should start escort task even before reaching the join waypoint
             self.configure_escort_tasks(
-                waypoint,
+                self.group.points[0] or waypoint,
                 [
                     Targets.All.Air.Planes.Fighters,
                     Targets.All.Air.Planes.MultiroleFighters,

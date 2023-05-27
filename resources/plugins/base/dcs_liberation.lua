@@ -4,10 +4,8 @@ local WRITESTATE_SCHEDULE_IN_SECONDS = 60
 logger = mist.Logger:new("DCSLiberation", "info")
 logger:info("Check that json.lua is loaded : json = "..tostring(json))
 
-crash_events = {} -- killed aircraft will be added via S_EVENT_CRASH event
-dead_events = {} -- killed units will be added via S_EVENT_DEAD event
-unit_lost_events = {} -- killed units will be added via S_EVENT_UNIT_LOST
-kill_events = {} -- killed units will be added via S_EVENT_KILL 
+killed_aircrafts = {} -- killed aircraft will be added via S_EVENT_CRASH event
+killed_ground_units = {} -- killed units will be added via S_EVENT_DEAD event
 base_capture_events = {}
 destroyed_objects_positions = {} -- will be added via S_EVENT_DEAD event
 mission_ended = false
@@ -32,11 +30,9 @@ function write_state()
 
     local fp = io.open(_debriefing_file_location, 'w')
     local game_state = {
-        ["crash_events"] = crash_events,
-        ["dead_events"] = dead_events,
+        ["killed_aircrafts"] = killed_aircrafts,
+        ["killed_ground_units"] = killed_ground_units,
         ["base_capture_events"] = base_capture_events,
-		["unit_lost_events"] = unit_lost_events,
-		["kill_events"] = kill_events,
         ["mission_ended"] = mission_ended,
         ["destroyed_objects_positions"] = destroyed_objects_positions,
     }
@@ -144,18 +140,42 @@ write_state_error_handling = function()
     mist.scheduleFunction(write_state_error_handling, {}, timer.getTime() + WRITESTATE_SCHEDULE_IN_SECONDS)
 end
 
+local function has_value (tab, val)
+    for index, value in ipairs(tab) do
+        if value == val then
+            return true
+        end
+    end
+
+    return false
+end
+
 activeWeapons = {}
 local function onEvent(event)
+   if event.id == world.event.S_EVENT_CRASH and event.initiator and not has_value(killed_aircrafts, event.initiator:getName()) then
+       killed_aircrafts[#crash_events + 1] = event.initiator.getName(event.initiator)
+       write_state()
+   end
+
+   --Is target a plane/heli on the ground that got hit, if so count it as dead
+   if event.id == world.event.S_EVENT_HIT and
+     event.target and
+     not event.target:inAir() and
+     event.target:hasAttribute("Air") and
+     not has_value(unit_lost_events, event.target:getName()) then
+       killed_aircrafts[#unit_lost_events + 1] = event.target:getName()
+       write_state()
+   end
     if event.id == world.event.S_EVENT_CRASH and event.initiator then
         crash_events[#crash_events + 1] = event.initiator.getName(event.initiator)
         write_state()
     end
-   
+
     if event.id == world.event.S_EVENT_UNIT_LOST and event.initiator then
         unit_lost_events[#unit_lost_events + 1] = event.initiator.getName(event.initiator)
         write_state()
     end
-	
+
 	if event.id == world.event.S_EVENT_KILL and event.target then
         kill_events[#kill_events + 1] = event.target.getName(event.target)
         write_state()

@@ -57,7 +57,6 @@ class FlightType(Enum):
     REFUELING = "Refueling"
     FERRY = "Ferry"
     AIR_ASSAULT = "Air Assault"
-    DECOY = "Decoy"
 
     def __str__(self) -> str:
         return self.value
@@ -86,7 +85,6 @@ class FlightType(Enum):
             FlightType.STRIKE,
             FlightType.ANTISHIP,
             FlightType.SEAD,
-            FlightType.DECOY,
             FlightType.DEAD,
             FlightType.BAI,
             FlightType.OCA_RUNWAY,
@@ -111,7 +109,6 @@ class FlightType(Enum):
             FlightType.OCA_RUNWAY: AirEntity.ATTACK_STRIKE,
             FlightType.REFUELING: AirEntity.TANKER,
             FlightType.SEAD: AirEntity.SUPPRESSION_OF_ENEMY_AIR_DEFENCE,
-            FlightType.DECOY: AirEntity.SUPPRESSION_OF_ENEMY_AIR_DEFENCE,
             FlightType.SEAD_ESCORT: AirEntity.SUPPRESSION_OF_ENEMY_AIR_DEFENCE,
             FlightType.STRIKE: AirEntity.ATTACK_STRIKE,
             FlightType.SWEEP: AirEntity.FIGHTER,

@@ -7,8 +7,6 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, TypeVar
 
 from dcs import Point
-from dcs.action import RemoveSceneObjectsMask, RemoveSceneObjects
-from dcs.triggers import Event, TriggerCondition, TriggerOnce, TriggerStart, TriggerZone
 
 from game.flightplan import HoldZoneGeometry
 from game.theater import MissionTarget
@@ -221,8 +219,6 @@ class FormationAttackBuilder(IBuilder[FlightPlanT, LayoutT], ABC):
             return builder.dead_point(target)
         elif flight.flight_type == FlightType.SEAD:
             return builder.sead_point(target)
-        elif flight.flight_type == FlightType.DECOY:
-            return builder.decoy_point(target)
         else:
             return builder.strike_point(target)
 
@@ -234,8 +230,6 @@ class FormationAttackBuilder(IBuilder[FlightPlanT, LayoutT], ABC):
             return builder.dead_area(location)
         elif flight.flight_type == FlightType.SEAD:
             return builder.sead_area(location)
-        elif flight.flight_type == FlightType.DECOY:
-            return builder.decoy_area(location)
         elif flight.flight_type == FlightType.OCA_AIRCRAFT:
             return builder.oca_strike_area(location)
         else:

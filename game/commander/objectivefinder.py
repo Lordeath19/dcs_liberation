@@ -13,6 +13,8 @@ from game.theater import (
     FrontLine,
     MissionTarget,
     OffMapSpawn,
+    ControlPointStatus,
+    NavalControlPoint,
 )
 from game.theater.theatergroundobject import (
     BuildingGroundObject,
@@ -94,6 +96,11 @@ class ObjectiveFinder:
         # building).
         found_targets: set[str] = set()
         for enemy_cp in self.enemy_control_points():
+            try:
+                if enemy_cp.ignore_infrastructure:
+                    continue
+            except AttributeError:
+                enemy_cp.ignore_infrastructure = False
             for ground_object in enemy_cp.ground_objects:
                 # TODO: Reuse ground_object.mission_types.
                 # The mission types for ground objects are currently not
@@ -188,7 +195,10 @@ class ObjectiveFinder:
     def friendly_control_points(self) -> Iterator[ControlPoint]:
         """Iterates over all friendly control points."""
         return (
-            c for c in self.game.theater.controlpoints if c.is_friendly(self.is_player)
+            c
+            for c in self.game.theater.controlpoints
+            if c.is_friendly(self.is_player)
+            and c.status is not ControlPointStatus.Destroyed
         )
 
     def farthest_friendly_control_point(self) -> ControlPoint:
@@ -216,7 +226,9 @@ class ObjectiveFinder:
         closest = None
         min_distance = meters(math.inf)
         for cp in self.friendly_control_points():
-            if isinstance(cp, OffMapSpawn) or cp.is_fleet:
+            if isinstance(cp, OffMapSpawn) or (
+                cp.is_fleet and cp.runway_status.damaged
+            ):
                 continue
             distance = threat_zones.distance_to_threat(cp.position)
             if distance < min_distance:

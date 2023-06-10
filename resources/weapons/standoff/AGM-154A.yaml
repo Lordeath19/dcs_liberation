@@ -1,4 +1,5 @@
 name: AGM-154A JSOW
+type: Cruise
 year: 1998
 fallback: AGM-65G
 clsids:

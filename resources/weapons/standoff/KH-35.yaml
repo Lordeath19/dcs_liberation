@@ -1,4 +1,5 @@
 name: KH-35
+type: Cruise
 year: 2003
 fallback: KH-31A
 clsids:

@@ -1,0 +1,206 @@
+---
+name: Syria - Operation Waking Waters
+theater: Syria
+authors: Fuzzle
+recommended_player_faction: USA 2010 (Waking Waters)
+recommended_enemy_faction: Syria 2010 (Waking Waters)
+description: <p>In this fictional scenario, a US/Israeli coalition must push north from the Israeli border, through Syria and Lebanon to Aleppo.</p><p><strong>Backstory:</strong> A Syrian-Lebanese joint force (with Russian materiel support) has attacked Israel, attmepting to cross the northern border. With the arrival of a US carrier group, Israel prepares its counterattack. The US Navy will handle the Beirut region's coastal arena, while the IAF will push through Damascus and the inland mountain ranges.</p>
+version: "10.1"
+miz: operation_waking_waters.miz
+performance: 2
+recommended_start_date: 2004-07-17
+recommended_player_money: 300
+recommended_enemy_money: 200
+recommended_player_income_multiplier: 0.4
+recommended_enemy_income_multiplier: 0.3
+squadrons:
+  #BLUFOR CVN
+  Naval-1:
+    - primary: BARCAP
+      secondary: air-to-air
+      aircraft:
+        - VF-143
+    - primary: SEAD
+      secondary: any
+      aircraft:
+        - VFA-106
+    - primary: AEW&C
+      aircraft:
+        - VAW-125
+    - primary: Refueling
+      aircraft:
+        - VS-35 (Tanker)
+    - primary: Anti-ship
+      secondary: air-to-ground
+      aircraft:
+        - VS-35
+    - primary: Transport
+      aircraft:
+        - HSM-40
+  #BLUFOR LHA
+  Naval-3:
+    - primary: BAI
+      secondary: air-to-ground
+      aircraft:
+        - VMA-214
+    - primary: Transport
+      secondary: air-to-ground
+      aircraft:
+        - HMLA-269 (UH-1H)
+    - primary: CAS
+      secondary: air-to-ground
+      aircraft:
+        - HMLA-269 (AH-1W)
+    - primary: CAS
+      secondary: air-to-ground
+      aircraft:
+        - 113th Squadron
+  # OPFOR CVN
+  Naval-2:
+    - primary: BARCAP
+      secondary: air-to-air
+      aircraft:
+        - Su-33 Flanker-D
+    - primary: TARCAP
+      secondary: air-to-ground
+      aircraft:
+        - Su-33 Flanker-D
+  # OPFOR LHA
+  Naval-4:
+    - primary: CAS
+      secondary: air-to-ground
+      aircraft:
+        - Mi-24V Hind-E
+  #Larnaca
+  47:
+    - primary: BARCAP
+      secondary: air-to-air
+      aircraft:
+        - 106th Squadron
+    - primary: SEAD
+      secondary: any
+      aircraft:
+        - 201th Squadron
+    - primary: SEAD
+      secondary: any
+      aircraft:
+        - 179th FS
+    - primary: Refueling
+      aircraft:
+        - VMGR-352
+    - primary: Strike
+      secondary: any
+      aircraft:
+        - 69th Squadron
+    - primary: BAI
+      secondary: any
+      aircraft:
+        - 110th Squadron
+  #Larnaca
+  44:
+    - primary: BARCAP
+      secondary: air-to-air
+      aircraft:
+        - 152th FS
+    - primary: SEAD
+      secondary: any
+      aircraft:
+        - F-117A Nighthawk
+    - primary: SEAD
+      secondary: any
+      aircraft:
+        - 179th FS
+    - primary: Strike
+      secondary: any
+      aircraft:
+        - 492nd FS
+    - primary: Strike
+      secondary: any
+      aircraft:
+        - B-52H Stratofortress
+    - primary: BAI
+      secondary: air-to-ground
+      aircraft:
+        - B-1B Lancer
+  # Beirut-Rafic Hariri
+  6:
+    - primary: BARCAP
+      secondary: air-to-air
+      aircraft:
+        - Mirage 2000-5
+    - primary: Strike
+      secondary: air-to-ground
+      aircraft:
+        - Tu-22M3 Backfire-C
+    - primary: TARCAP
+      secondary: air-to-air
+      aircraft:
+        - MiG-29S Fulcrum-C
+    - primary: Strike
+      secondary: air-to-ground
+      aircraft:
+        - Tu-22M3 Backfire-C
+  # Bassel Al-Assad
+  21:
+    - primary: TARCAP
+      secondary: air-to-air
+      aircraft:
+        - MiG-23ML Flogger-G
+    - primary: BARCAP
+      secondary: any
+      aircraft:
+        - MiG-29S Fulcrum-C
+    - primary: BARCAP
+      secondary: any
+      aircraft:
+        - Mirage 2000
+    - primary: Refueling
+      aircraft:
+        - IL-78M
+    - primary: AEW&C
+      aircraft:
+        - A-50
+    - primary: Strike
+      secondary: air-to-ground
+      aircraft:
+        - Tu-22M3 Backfire-C
+    - primary: Strike
+      secondary: air-to-ground
+      aircraft:
+        - Su-24M Fencer-D
+  # OPFOR Second inland FOB
+  FOB Homs:
+    - primary: CAS
+      secondary: air-to-ground
+      aircraft:
+        - Mi-24V Hind-E
+  # OPFOR Second coastal FOB
+  FOB Samandag:
+    - primary: CAS
+      secondary: air-to-ground
+      aircraft:
+        - Mi-24V Hind-E
+  # Aleppo
+  27:
+    - primary: BARCAP
+      secondary: air-to-air
+      aircraft:
+        - Su-30 Flanker-C
+    - primary: CAS
+      secondary: air-to-ground
+      aircraft:
+        - Mi-24V Hind-E
+  # Kuweires
+  31:
+    - primary: TARCAP
+      secondary: air-to-air
+      aircraft:
+        - MiG-23ML Flogger-G
+    - primary: BARCAP
+      secondary: any
+      aircraft:
+        - MiG-29S Fulcrum-C
+    - primary: Strike
+      secondary: air-to-ground
+      aircraft:
+        - Su-34 Fullback

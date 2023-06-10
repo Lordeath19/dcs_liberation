@@ -23,7 +23,11 @@ class PlanOcaStrike(PackagePlanningTask[ControlPoint]):
         state.oca_targets.remove(self.target)
 
     def propose_flights(self) -> None:
-        self.propose_flight(FlightType.OCA_RUNWAY, 2)
-        if self.aircraft_cold_start:
+        if self.target.runway_is_operational():
+            if self.target.is_fleet:
+                self.propose_flight(FlightType.ANTISHIP, 2)
+            else:
+                self.propose_flight(FlightType.OCA_RUNWAY, 2)
+        else:
             self.propose_flight(FlightType.OCA_AIRCRAFT, 2)
         self.propose_common_escorts()

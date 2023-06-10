@@ -5,7 +5,9 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import TYPE_CHECKING, Type
 
-from game.theater import FrontLine
+from dcs import Point
+
+from game.theater import FrontLine, TheaterGroundObject
 from game.utils import Distance, Speed, kph, meters, dcs_to_shapely_point
 from .ibuilder import IBuilder
 from .invalidobjectivelocation import InvalidObjectiveLocation
@@ -74,7 +76,18 @@ class CasFlightPlan(PatrollingFlightPlan[CasLayout], UiZoneDisplay):
 
 
 class Builder(IBuilder[CasFlightPlan, CasLayout]):
-    def layout(self, dump_debug_info: bool) -> CasLayout:
+    def zone(self) -> tuple[Point, Point]:
+        location = self.package.target
+
+        if not isinstance(location, TheaterGroundObject):
+            raise InvalidObjectiveLocation(self.flight.flight_type, location)
+
+        return (
+            location.position,
+            location.control_point.position,
+        )
+
+    def frontline(self) -> tuple[Point, Point]:
         location = self.package.target
 
         if not isinstance(location, FrontLine):
@@ -93,8 +106,24 @@ class Builder(IBuilder[CasFlightPlan, CasLayout]):
         if end_distance < start_distance:
             patrol_start, patrol_end = patrol_end, patrol_start
 
-        builder = WaypointBuilder(self.flight, self.coalition)
+        return patrol_start, patrol_end
 
+    def layout(self, dump_debug_info: bool) -> CasLayout:
+        location = self.package.target
+
+        if isinstance(location, FrontLine):
+            patrol_start, patrol_end = self.frontline()
+        elif isinstance(location, TheaterGroundObject):
+            patrol_start, patrol_end = self.zone()
+        else:
+            raise InvalidObjectiveLocation(self.flight.flight_type, location)
+
+        start_distance = patrol_start.distance_to_point(self.flight.departure.position)
+        end_distance = patrol_end.distance_to_point(self.flight.departure.position)
+        if end_distance < start_distance:
+            patrol_start, patrol_end = patrol_end, patrol_start
+
+        builder = WaypointBuilder(self.flight, self.coalition)
         is_helo = self.flight.unit_type.dcs_unit_type.helicopter
         patrol_altitude = self.doctrine.ingress_altitude if not is_helo else meters(50)
         use_agl_patrol_altitude = is_helo

@@ -44,9 +44,14 @@ class PydcsWaypointBuilder:
         self.generated_waypoint_idx = generated_waypoint_idx
 
     def build(self) -> MovingPoint:
+        waypoint_unit_type = self.flight.unit_type.dcs_unit_type
+        unit_type_max_speed = waypoint_unit_type.max_speed * 0.85
+        # Some aircraft support afterburner, we should factor that into our cruise speed adjustments
+        unit_type_max_speed = min(unit_type_max_speed, 950)
         waypoint = self.group.add_waypoint(
             self.waypoint.position,
             self.waypoint.alt.meters,
+            unit_type_max_speed,
             name=self.waypoint.name,
         )
 
@@ -74,8 +79,8 @@ class PydcsWaypointBuilder:
         self.waypoint.tot = tot
         if not self._viggen_client_tot():
             waypoint.ETA = int((tot - self.now).total_seconds())
-            waypoint.ETA_locked = True
-            waypoint.speed_locked = False
+            waypoint.ETA_locked = False
+            waypoint.speed_locked = True
 
     def _viggen_client_tot(self) -> bool:
         """Viggen player aircraft consider any waypoint with a TOT set to be a target ("M") waypoint.

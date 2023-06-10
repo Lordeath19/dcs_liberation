@@ -53,6 +53,14 @@ class PackageBuilder:
         start_type = squadron.location.required_aircraft_start_type
         if start_type is None:
             start_type = self.start_type
+        if (
+            squadron.location.dcs_airport
+            and squadron.aircraft.dcs_unit_type.large_parking_slot
+            and not any(
+                slot.large for slot in squadron.location.dcs_airport.parking_slots
+            )
+        ):
+            start_type = StartType.IN_FLIGHT
 
         flight = Flight(
             self.package,

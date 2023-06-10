@@ -248,6 +248,12 @@ class ObjectiveFinder:
 
         return closest
 
+    def carrier_control_points(self) -> Iterator[ControlPoint]:
+        """Finds all friendly carriers."""
+        for cp in self.friendly_control_points():
+            if cp.is_carrier and not cp.runway_status.damaged:
+                yield cp
+
     def enemy_control_points(self) -> Iterator[ControlPoint]:
         """Iterates over all enemy control points."""
         return (

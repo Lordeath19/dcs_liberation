@@ -5,11 +5,18 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from dcs import Mission
-from dcs.action import AITaskPush, ActivateGroup
-from dcs.condition import CoalitionHasAirdrome, TimeAfter
+from dcs.action import (
+    AITaskPush,
+    ActivateGroup,
+    RemoveSceneObjects,
+    RemoveSceneObjectsMask,
+    ClearFlag,
+    SetFlag,
+)
+from dcs.condition import CoalitionHasAirdrome, TimeAfter, TimeSinceFlag
 from dcs.planes import AJS37
 from dcs.task import StartCommand
-from dcs.triggers import Event, TriggerOnce, TriggerRule
+from dcs.triggers import Event, TriggerOnce, TriggerRule, TriggerCondition
 from dcs.unitgroup import FlyingGroup
 
 from game.ato import Flight, FlightWaypoint
@@ -63,12 +70,48 @@ class WaypointGenerator:
         self.mission_data = mission_data
         self.unit_map = unit_map
 
+    def remove_waypoint_trees(self, flight: Flight, waypoint: FlightWaypoint) -> None:
+        tree_remover_zone = self.mission.triggers.add_triggerzone(
+            waypoint.position,
+            radius=500,
+            hidden=True,
+            name=f"RemoveTrees{flight.id}_{waypoint.name}_zone",
+        )
+
+        flag_id = random.randint(100, 99999999999)
+        flag_delay = random.randint(120, 300)
+        tree_remover_trigger_flag = TriggerOnce(
+            Event.NoEvent, f"RemoveTrees{flight.id}_{waypoint.name}_init"
+        )
+
+        tree_remover_trigger = TriggerCondition(
+            Event.NoEvent, f"RemoveTrees{flight.id}_{waypoint.name}"
+        )
+
+        tree_remover_trigger_flag.add_condition(TimeAfter(10))
+        tree_remover_trigger_flag.add_action(SetFlag(flag_id))
+
+        tree_remover_trigger.add_condition(TimeSinceFlag(flag_id, flag_delay))
+        tree_remover_trigger.add_action(
+            RemoveSceneObjects(
+                RemoveSceneObjectsMask.TREES_ONLY, zone=tree_remover_zone.id
+            )
+        )
+        tree_remover_trigger.add_action(ClearFlag(flag_id))
+        tree_remover_trigger.add_action(SetFlag(flag_id))
+        self.mission.triggerrules.triggers.append(tree_remover_trigger_flag)
+        self.mission.triggerrules.triggers.append(tree_remover_trigger)
+
     def create_waypoints(self) -> tuple[timedelta, list[FlightWaypoint]]:
         for waypoint in self.flight.points:
             waypoint.tot = None
 
         waypoints = self.flight.flight_plan.waypoints
         mission_start_time = self.set_takeoff_time(waypoints[0])
+
+        for waypoint in waypoints:
+            if waypoint.waypoint_type in TARGET_WAYPOINTS:
+                self.remove_waypoint_trees(self.flight, waypoint)
 
         filtered_points: list[FlightWaypoint] = []
         for point in self.flight.points:

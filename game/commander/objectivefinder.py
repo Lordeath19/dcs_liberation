@@ -177,12 +177,11 @@ class ObjectiveFinder:
             for airfield in airfields_in_threat_range:
                 if not airfield.is_friendly(self.is_player):
                     yield cp
-                    break
 
     def oca_targets(self, min_aircraft: int) -> Iterator[ControlPoint]:
         airfields = []
         for control_point in self.enemy_control_points():
-            if not isinstance(control_point, Airfield):
+            if not isinstance(control_point, (Airfield, NavalControlPoint)):
                 continue
             if control_point.allocated_aircraft().total_present >= min_aircraft:
                 airfields.append(control_point)

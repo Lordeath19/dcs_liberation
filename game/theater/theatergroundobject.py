@@ -165,6 +165,7 @@ class TheaterGroundObject(MissionTarget, SidcDescribable, ABC):
             yield from [
                 FlightType.STRIKE,
                 FlightType.REFUELING,
+                FlightType.CAS,
             ]
         yield from super().mission_types(for_player)
 

@@ -146,12 +146,23 @@ class ObjectiveFinder:
         """Iterates over all active front lines in the theater."""
         yield from self.game.theater.conflicts()
 
+    def vulnerable_front_lines(self) -> Iterator[ControlPoint]:
+        """Iterates over friendly CPs that aren't behind friendly lines"""
+        for cp in self.friendly_control_points():
+            if isinstance(cp, OffMapSpawn):
+                continue
+            if cp.has_active_frontline or cp.is_isolated:
+                yield cp
+
     def vulnerable_control_points(self) -> Iterator[ControlPoint]:
         """Iterates over friendly CPs that are vulnerable to enemy CPs.
 
-        Vulnerability is defined as any enemy CP within threat range of of the
+        Vulnerability is defined as any enemy CP within threat range of the
         CP.
         """
+        if list(self.game.theater.conflicts()):
+            yield from self.vulnerable_front_lines()
+            return
         for cp in self.friendly_control_points():
             if isinstance(cp, OffMapSpawn):
                 # Off-map spawn locations don't need protection.

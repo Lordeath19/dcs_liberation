@@ -64,7 +64,7 @@ end
 
 local function testDebriefingFilePath(folderPath, folderName, useCurrentStamping)
     if folderPath then
-        local filePath = nil
+        local filePath
         if not ends_with(folderPath, "\\") then
             folderPath = folderPath .. "\\"
         end
@@ -89,18 +89,18 @@ local function discoverDebriefingFilePath()
     -- 3. System temporary folder, as set in the TEMP environment variable
     -- 4. Working directory.
     
-    local useCurrentStamping = nil
+    local useCurrentStamping
     if os then  
         useCurrentStamping = os.getenv("LIBERATION_EXPORT_STAMPED_STATE")
     end
 
-    local installPath = nil
+    local installPath
     if dcsLiberation then 
         installPath = dcsLiberation.installPath 
     end
     
     if os then
-        local result = nil
+        local result
         -- try using the LIBERATION_EXPORT_DIR environment variable
         result = testDebriefingFilePath(os.getenv("LIBERATION_EXPORT_DIR"), "LIBERATION_EXPORT_DIR", useCurrentStamping)
         if result then

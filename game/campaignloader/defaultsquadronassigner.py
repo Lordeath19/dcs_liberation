@@ -50,7 +50,9 @@ class DefaultSquadronAssigner:
                     self.game,
                 )
                 squadron.set_auto_assignable_mission_types(
-                    squadron_config.auto_assignable
+                    squadron_def.auto_assignable_mission_types.union(
+                        squadron_config.auto_assignable
+                    )
                 )
                 self.air_wing.add_squadron(squadron)
 

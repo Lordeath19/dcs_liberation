@@ -13,6 +13,7 @@ from game.commander.tasks.compound.interdictreinforcements import (
     InterdictReinforcements,
 )
 from game.commander.tasks.compound.protectairspace import ProtectAirSpace
+from game.commander.tasks.compound.saturatefrontlines import SaturateFrontLines
 from game.commander.tasks.compound.theatersupport import TheaterSupport
 from game.commander.theaterstate import TheaterState
 from game.htn import CompoundTask, Method
@@ -28,7 +29,9 @@ class PlanNextAction(CompoundTask[TheaterState]):
         yield [CaptureBases()]
         yield [DefendBases()]
         yield [InterdictReinforcements()]
-        yield [AttackBattlePositions()]
+        yield [DegradeIads()]
         yield [AttackAirInfrastructure(self.aircraft_cold_start)]
         yield [AttackBuildings()]
+        yield [SaturateFrontLines()]
+        yield [AttackBattlePositions()]
         yield [DegradeIads()]

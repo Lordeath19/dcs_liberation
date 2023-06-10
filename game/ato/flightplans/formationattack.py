@@ -146,7 +146,9 @@ class FormationAttackBuilder(IBuilder[FlightPlanT, LayoutT], ABC):
         hold = builder.hold(self._hold_point())
         join = builder.join(self.package.waypoints.join)
         join.wants_escort = True
-
+        # In case there is a rush (player wants it done asap)
+        if len(self.flight.package.flights) < 2 and self.package.auto_asap:
+            hold.only_for_player = True
         ingress = builder.ingress(
             ingress_type, self.package.waypoints.ingress, self.package.target
         )

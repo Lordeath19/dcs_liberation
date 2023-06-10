@@ -168,9 +168,8 @@ class PackagePlanningTask(TheaterCommanderTask, Generic[MissionTargetT]):
             if detector not in state.detecting_air_defenses:
                 state.detecting_air_defenses.append(detector)
 
-        if not ignore_iads:
-            for iads_threat in self.iter_iads_threats(state):
-                threatened = True
-                if iads_threat not in state.threatening_air_defenses:
-                    state.threatening_air_defenses.append(iads_threat)
-        return not threatened
+        for iads_threat in self.iter_iads_threats(state):
+            threatened = True
+            if iads_threat not in state.threatening_air_defenses:
+                state.threatening_air_defenses.append(iads_threat)
+        return not threatened or ignore_iads

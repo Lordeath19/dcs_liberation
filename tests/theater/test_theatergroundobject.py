@@ -95,7 +95,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
         control_point=dummy_control_point,
     )
     mission_types = list(building.mission_types(for_player=False))
-    assert len(mission_types) == 6
+    assert len(mission_types) == 7
     assert FlightType.STRIKE in mission_types
     assert FlightType.REFUELING in mission_types
     assert FlightType.ESCORT in mission_types
@@ -110,7 +110,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
         control_point=dummy_control_point,
     )
     mission_types = list(iads_building.mission_types(for_player=False))
-    assert len(mission_types) == 7
+    assert len(mission_types) == 8
     assert FlightType.STRIKE in mission_types
     assert FlightType.REFUELING in mission_types
     assert FlightType.ESCORT in mission_types
@@ -130,7 +130,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
             control_point=dummy_control_point,
         )
         mission_types = list(ground_object.mission_types(for_player=False))
-        assert len(mission_types) == 7
+        assert len(mission_types) == 8
         assert FlightType.ANTISHIP in mission_types
         assert FlightType.STRIKE in mission_types
         assert FlightType.REFUELING in mission_types
@@ -145,7 +145,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
         control_point=dummy_control_point,
     )
     mission_types = list(sam.mission_types(for_player=False))
-    assert len(mission_types) == 8
+    assert len(mission_types) == 9
     assert FlightType.DEAD in mission_types
     assert FlightType.SEAD in mission_types
     assert FlightType.STRIKE in mission_types
@@ -161,7 +161,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
         control_point=dummy_control_point,
     )
     mission_types = list(ewr.mission_types(for_player=False))
-    assert len(mission_types) == 7
+    assert len(mission_types) == 8
     assert FlightType.DEAD in mission_types
     assert FlightType.STRIKE in mission_types
     assert FlightType.REFUELING in mission_types
@@ -180,7 +180,8 @@ def test_mission_types_enemy(mocker: Any) -> None:
             control_point=dummy_control_point,
         )
         mission_types = list(ground_object.mission_types(for_player=False))
-        assert len(mission_types) == 6
+        assert len(mission_types) == 8
+        assert FlightType.BAI in mission_types
         assert FlightType.STRIKE in mission_types
         assert FlightType.REFUELING in mission_types
         assert FlightType.ESCORT in mission_types
@@ -194,7 +195,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
         control_point=dummy_control_point,
     )
     mission_types = list(vehicles.mission_types(for_player=False))
-    assert len(mission_types) == 7
+    assert len(mission_types) == 8
     assert FlightType.BAI in mission_types
     assert FlightType.STRIKE in mission_types
     assert FlightType.REFUELING in mission_types

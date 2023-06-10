@@ -238,11 +238,11 @@ local unitPayloads = {
 					["num"] = 3,
 				},
 				[8] = {
-					["CLSID"] = "{BRU33_2X_MK-82}",
+					["CLSID"] = "{GBU_31_V_2B}",
 					["num"] = 2,
 				},
 				[9] = {
-					["CLSID"] = "{BRU33_2X_MK-82}",
+					["CLSID"] = "{GBU_31_V_2B}",
 					["num"] = 8,
 				},
 			},
@@ -274,11 +274,11 @@ local unitPayloads = {
 					["num"] = 3,
 				},
 				[6] = {
-					["CLSID"] = "{BRU55_2*AGM-154A}",
+					["CLSID"] = "{BRU55_2*AGM-154C}",
 					["num"] = 8,
 				},
 				[7] = {
-					["CLSID"] = "{BRU55_2*AGM-154A}",
+					["CLSID"] = "{BRU55_2*AGM-154C}",
 					["num"] = 2,
 				},
 				[8] = {
@@ -288,6 +288,51 @@ local unitPayloads = {
 			},
 			["tasks"] = {
 				[1] = 11,
+			},
+		},
+		[8] = {
+			["displayName"] = "Liberation Decoy",
+			["name"] = "Liberation Decoy",
+			["pylons"] = {
+				[1] = {
+					["CLSID"] = "{5CE2FF2A-645A-4197-B48D-8720AC69394F}",
+					["num"] = 9,
+				},
+				[2] = {
+					["CLSID"] = "{5CE2FF2A-645A-4197-B48D-8720AC69394F}",
+					["num"] = 1,
+				},
+				[3] = {
+					["CLSID"] = "{40EF17B7-F508-45de-8566-6FFECC0C1AB8}",
+					["num"] = 6,
+				},
+				[4] = {
+					["CLSID"] = "{40EF17B7-F508-45de-8566-6FFECC0C1AB8}",
+					["num"] = 4,
+				},
+				[5] = {
+					["CLSID"] = "{BRU_42A_x3_ADM_141A}",
+					["num"] = 3,
+				},
+				[6] = {
+					["CLSID"] = "{BRU_42A_x3_ADM_141A}",
+					["num"] = 7,
+				},
+				[7] = {
+					["CLSID"] = "{BRU_42A_x3_ADM_141A}",
+					["num"] = 2,
+				},
+				[8] = {
+					["CLSID"] = "{BRU_42A_x3_ADM_141A}",
+					["num"] = 8,
+				},
+				[9] = {
+					["CLSID"] = "{FPU_8A_FUEL_TANK}",
+					["num"] = 5,
+				},
+			},
+			["tasks"] = {
+				[1] = 29,
 			},
 		},
 	},

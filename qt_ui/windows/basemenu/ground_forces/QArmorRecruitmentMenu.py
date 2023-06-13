@@ -30,7 +30,11 @@ class QArmorRecruitmentMenu(UnitTransactionFrame[GroundUnitType]):
         row = 0
 
         unit_types = list(
-            set(self.game_model.game.faction_for(player=True).ground_units)
+            set(
+                self.game_model.game.faction_for(
+                    player=self.game_model.game.is_player_blue
+                ).ground_units
+            )
         )
         unit_types.sort(key=lambda u: u.display_name)
         for row, unit_type in enumerate(unit_types):

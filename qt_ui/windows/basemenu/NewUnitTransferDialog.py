@@ -41,6 +41,8 @@ class TransferDestinationComboBox(QComboBox):
                 continue
             if not self.game.blue.transit_network.has_path_between(origin, cp):
                 continue
+            if not cp.is_friendly(to_player=self.game.is_player_blue):
+                continue
             self.addItem(cp.name, cp)
         self.model().sort(0)
         self.setCurrentIndex(0)
@@ -168,7 +170,11 @@ class ScrollingUnitTransferGrid(QFrame):
         scroll_content = QWidget()
         task_box_layout = QGridLayout()
 
-        unit_types = set(self.game_model.game.faction_for(player=True).ground_units)
+        unit_types = set(
+            self.game_model.game.faction_for(
+                player=self.game_model.game.is_player_blue
+            ).ground_units
+        )
         sorted_units = sorted(
             {u for u in unit_types if self.cp.base.total_units_of_type(u)},
             key=lambda u: u.display_name,

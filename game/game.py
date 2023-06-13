@@ -151,6 +151,14 @@ class Game:
         yield self.blue
         yield self.red
 
+    @property
+    def is_player_blue(self) -> bool:
+        return not self.settings.show_red_ato
+
+    @property
+    def side(self) -> Coalition:
+        return self.blue if self.is_player_blue else self.red
+
     def point_in_world(self, x: float, y: float) -> Point:
         return Point(x, y, self.theater.terrain)
 

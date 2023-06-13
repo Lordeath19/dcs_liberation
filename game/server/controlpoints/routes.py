@@ -75,7 +75,7 @@ def set_destination(
         )
     if not cp.moveable:
         raise HTTPException(status.HTTP_403_FORBIDDEN, detail=f"{cp} is not mobile")
-    if not cp.captured:
+    if not cp.is_friendly(game.is_player_blue):
         raise HTTPException(
             status.HTTP_403_FORBIDDEN, detail=f"{cp} is not owned by the player"
         )
@@ -111,7 +111,7 @@ def cancel_travel(cp_id: UUID, game: Game = Depends(GameContext.require)) -> Non
         )
     if not cp.moveable:
         raise HTTPException(status.HTTP_403_FORBIDDEN, detail=f"{cp} is not mobile")
-    if not cp.captured:
+    if not cp.is_friendly(game.is_player_blue):
         raise HTTPException(
             status.HTTP_403_FORBIDDEN, detail=f"{cp} is not owned by the player"
         )

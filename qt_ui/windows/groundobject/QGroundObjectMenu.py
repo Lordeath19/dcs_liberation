@@ -56,6 +56,7 @@ class QGroundObjectMenu(QDialog):
         self.ground_object = ground_object
         self.cp = cp
         self.game = game
+        self.is_friendly = self.cp.is_friendly(to_player=self.game.is_player_blue)
         self.setWindowTitle(
             f"Location - {self.ground_object.obj_name} ({self.cp.name})"
         )
@@ -79,7 +80,7 @@ class QGroundObjectMenu(QDialog):
 
         if isinstance(self.ground_object, BuildingGroundObject):
             self.mainLayout.addWidget(self.buildingBox)
-            if self.cp.captured:
+            if self.is_friendly:
                 self.mainLayout.addWidget(self.financesBox)
         else:
             self.mainLayout.addWidget(self.intelBox)
@@ -100,7 +101,7 @@ class QGroundObjectMenu(QDialog):
                 self.actionLayout.addWidget(self.sell_all_button)
             self.actionLayout.addWidget(self.buy_replace)
 
-        if self.cp.captured and self.ground_object.purchasable:
+        if self.is_friendly and self.ground_object.purchasable:
             self.mainLayout.addLayout(self.actionLayout)
         self.setLayout(self.mainLayout)
 
@@ -116,7 +117,7 @@ class QGroundObjectMenu(QDialog):
                     QLabel(f"<b>Unit {str(unit.display_name)}</b>"), i, 0
                 )
 
-                if not unit.alive and unit.repairable and self.cp.captured:
+                if not unit.alive and unit.repairable and self.is_friendly:
                     price = unit.unit_type.price if unit.unit_type else 0
                     repair = QPushButton(f"Repair [{price}M]")
                     repair.setProperty("style", "btn-success")
@@ -168,7 +169,7 @@ class QGroundObjectMenu(QDialog):
         self.headingLabel = QLabel("Heading:")
         self.orientationBoxLayout.addWidget(self.headingLabel)
         self.headingSelector = QSpinBox()
-        self.headingSelector.setEnabled(self.cp.is_friendly(to_player=True))
+        self.headingSelector.setEnabled(self.is_friendly)
         self.headingSelector.setRange(0, 359)
         self.headingSelector.setWrapping(True)
         self.headingSelector.setSingleStep(5)
@@ -177,7 +178,7 @@ class QGroundObjectMenu(QDialog):
             lambda degrees: self.rotate_tgo(Heading(degrees))
         )
         self.orientationBoxLayout.addWidget(self.headingSelector)
-        if self.cp.captured:
+        if self.is_friendly:
             self.head_to_conflict_button = QPushButton("Head to conflict")
             heading = (
                 self.game.theater.heading_to_conflict_from(self.ground_object.position)
@@ -232,8 +233,8 @@ class QGroundObjectMenu(QDialog):
             self.sell_all_button.setText("Disband (+$" + str(self.total_value) + "M)")
 
     def repair_unit(self, unit, price):
-        if self.game.blue.budget > price:
-            self.game.blue.budget -= price
+        if self.game.side.budget > price:
+            self.game.side.budget -= price
             unit.alive = True
             GameUpdateSignal.get_instance().updateGame(self.game)
 
@@ -254,7 +255,7 @@ class QGroundObjectMenu(QDialog):
 
     def sell_all(self):
         self.update_total_value()
-        self.game.blue.budget += self.total_value
+        self.game.side.budget += self.total_value
         self.ground_object.groups = []
         self.update_game()
 

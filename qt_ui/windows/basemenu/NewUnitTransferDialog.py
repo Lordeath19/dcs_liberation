@@ -39,7 +39,7 @@ class TransferDestinationComboBox(QComboBox):
         for cp in self.game.theater.controlpoints:
             if (
                 cp != self.origin
-                and cp.is_friendly(to_player=True)
+                and cp.is_friendly(to_player=self.game.is_player_blue)
                 and cp.can_deploy_ground_units
             ):
                 self.addItem(cp.name, cp)
@@ -169,7 +169,11 @@ class ScrollingUnitTransferGrid(QFrame):
         scroll_content = QWidget()
         task_box_layout = QGridLayout()
 
-        unit_types = set(self.game_model.game.faction_for(player=True).ground_units)
+        unit_types = set(
+            self.game_model.game.faction_for(
+                player=self.game_model.game.is_player_blue
+            ).ground_units
+        )
         sorted_units = sorted(
             {u for u in unit_types if self.cp.base.total_units_of_type(u)},
             key=lambda u: u.name,

@@ -366,7 +366,9 @@ class TransferModel(QAbstractListModel):
 
     @property
     def transfers(self) -> PendingTransfers:
-        return self.game_model.game.coalition_for(player=True).transfers
+        return self.game_model.game.coalition_for(
+            player=self.game_model.game.is_player_blue
+        ).transfers
 
     def rowCount(self, parent: QModelIndex = QModelIndex()) -> int:
         return self.transfers.pending_transfer_count
@@ -537,6 +539,7 @@ class GameModel:
         self.sim_controller = sim_controller
         self.transfer_model = TransferModel(self)
         self.blue_air_wing_model = AirWingModel(self, player=True)
+        self.red_air_wing_model = AirWingModel(self, player=False)
         if self.game is None:
             self.ato_model = AtoModel(self, AirTaskingOrder())
             self.red_ato_model = AtoModel(self, AirTaskingOrder())
@@ -549,6 +552,18 @@ class GameModel:
             return self.ato_model
         return self.red_ato_model
 
+    @property
+    def active_ato_model(self) -> AtoModel:
+        return self.ato_model if self.game.is_player_blue else self.red_ato_model
+
+    @property
+    def active_air_wing_model(self) -> AirWingModel:
+        return (
+            self.blue_air_wing_model
+            if self.game.is_player_blue
+            else self.red_air_wing_model
+        )
+
     def set(self, game: Optional[Game]) -> None:
         """Updates the managed Game object.
 
@@ -558,8 +573,8 @@ class GameModel:
         loaded.
         """
         self.game = game
-        self.ato_model.replace_from_game(player=True)
-        self.red_ato_model.replace_from_game(player=False)
+        self.ato_model.replace_from_game(player=self.game.is_player_blue)
+        self.red_ato_model.replace_from_game(player=not self.game.is_player_blue)
 
     def get(self) -> Game:
         if self.game is None:

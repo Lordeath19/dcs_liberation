@@ -182,7 +182,7 @@ class QGroundObjectTemplateLayout(QGroupBox):
 
     @property
     def affordable(self) -> bool:
-        return self.cost <= self.game.blue.budget
+        return self.cost <= self.game.side.budget
 
     def add_theater_group(
         self, group_name: str, force_group: ForceGroup, groups: list[TgoLayoutUnitGroup]
@@ -220,7 +220,7 @@ class QGroundObjectTemplateLayout(QGroupBox):
             self.game.theater.heading_to_conflict_from(self.ground_object.position)
             or self.ground_object.heading
         )
-        self.game.blue.budget -= self.cost
+        self.game.side.budget -= self.cost
         self.ground_object.groups = []
         for group_name, groups in self.layout_model.groups.items():
             for group in groups:
@@ -276,7 +276,7 @@ class QGroundObjectBuyMenu(QDialog):
         if not tasks:
             tasks = role.tasks
 
-        for group in game.blue.armed_forces.groups_for_tasks(tasks):
+        for group in game.side.armed_forces.groups_for_tasks(tasks):
             self.force_group_selector.addItem(group.name, userData=group)
         self.force_group_selector.setEnabled(self.force_group_selector.count() > 1)
         self.force_group_selector.adjustSize()

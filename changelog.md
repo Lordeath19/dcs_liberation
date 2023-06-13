@@ -99,6 +99,16 @@ Saves from 7.x are not compatible with 8.0.
 * **[Mission Generation]** Fix crash during mission generation caused by out of date DCS data for the Gazelle.
 * **[Mission Generation]** Fix crash during mission generation when DCS beacon data is inconsistent.
 
+# 7.1.1
+
+Saves from 7.1.0 are compatible with 7.1.1
+
+## Features/Improvements
+
+* **[UI]** Enabled viewing and editing redfor with cheats
+
+## Fixes
+
 # 7.1.0
 
 Saves from 7.0.0 are compatible with 7.1.0

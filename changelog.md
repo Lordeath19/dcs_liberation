@@ -4,6 +4,8 @@ Saves from 7.1.0 are compatible with 7.1.1
 
 ## Features/Improvements
 
+* **[UI]** Enabled viewing and editing redfor with cheats
+
 ## Fixes
 
 # 7.1.0

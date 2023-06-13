@@ -41,7 +41,10 @@ class QBudgetBox(QGroupBox):
             return
 
         self.game = game
-        self.setBudget(self.game.blue.budget, Income(self.game, player=True).total)
+        self.setBudget(
+            self.game.side.budget,
+            Income(self.game, player=self.game.is_player_blue).total,
+        )
         self.finances.setEnabled(True)
 
     def openFinances(self):

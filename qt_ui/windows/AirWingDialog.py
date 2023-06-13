@@ -230,8 +230,8 @@ class AirWingTabs(QTabWidget):
 
         self.addTab(
             SquadronList(
-                game_model.ato_model,
-                game_model.blue_air_wing_model,
+                game_model.active_ato_model,
+                game_model.active_air_wing_model,
                 game_model.game.theater,
                 game_model.sim_controller,
             ),

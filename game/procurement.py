@@ -40,6 +40,7 @@ class ProcurementAi:
         manage_runways: bool,
         manage_front_line: bool,
         manage_aircraft: bool,
+        reserve_quotas: dict[Squadron, int],
     ) -> None:
         self.game = game
         self.is_player = for_player
@@ -49,6 +50,7 @@ class ProcurementAi:
         self.manage_front_line = manage_front_line
         self.manage_aircraft = manage_aircraft
         self.threat_zones = self.game.threat_zone_for(not self.is_player)
+        self.reserve_quotas = reserve_quotas
 
     def calculate_ground_unit_budget_share(self) -> float:
         armor_investment = 0
@@ -95,6 +97,8 @@ class ProcurementAi:
 
         if self.manage_aircraft:
             budget = self.purchase_aircraft(budget)
+        if self.manage_front_line:
+            budget = self.reinforce_back_line(budget)
         return budget
 
     def repair_runways(self, budget: float) -> float:
@@ -131,6 +135,56 @@ class ProcurementAi:
             return None
         return random.choice(affordable_units)
 
+    def reinforce_back_line(self, budget: float) -> float:
+        # Otherwise buy reserves, but don't exceed the amount defined in the settings.
+        # These units do not exist in the world until the CP becomes
+        # connected to an active front line, at which point all these units
+        # will suddenly appear at the gates of the newly captured CP.
+        #
+        # To avoid sudden overwhelming numbers of units we avoid buying
+        # many.
+        #
+        # Also, do not bother buying units at bases that will never connect
+        # to a front line.
+        worst_supply = math.inf
+        understaffed: Optional[ControlPoint] = None
+
+        for cp in self.owned_points:
+            if cp.is_global:
+                continue
+            if not cp.can_recruit_ground_units(self.game):
+                continue
+
+            allocated = cp.allocated_ground_units(
+                self.game.coalition_for(self.is_player).transfers
+            )
+            if allocated.total >= self.game.settings.reserves_procurement_target:
+                continue
+
+            if allocated.total < worst_supply:
+                worst_supply = allocated.total
+                understaffed = cp
+
+        if understaffed is None:
+            return budget
+        return self.procure_for_cp(budget, understaffed)
+
+    def procure_for_cp(self, budget: float, cp: ControlPoint) -> float:
+        if not self.faction.frontline_units and not self.faction.artillery_units:
+            return budget
+
+        while budget > 0:
+            most_needed_type = self.most_needed_unit_class(cp)
+            unit = self.affordable_ground_unit_of_class(budget, most_needed_type)
+            if unit is None:
+                # Can't afford any more units.
+                break
+
+            budget -= unit.price
+            cp.ground_unit_orders.order({unit: 1})
+
+        return budget
+
     def reinforce_front_line(self, budget: float) -> float:
         if not self.faction.frontline_units and not self.faction.artillery_units:
             return budget
@@ -141,16 +195,7 @@ class ProcurementAi:
             cp = self.ground_reinforcement_candidate()
             if cp is None:
                 break
-
-            most_needed_type = self.most_needed_unit_class(cp)
-            unit = self.affordable_ground_unit_of_class(budget, most_needed_type)
-            if unit is None:
-                # Can't afford any more units.
-                break
-
-            budget -= unit.price
-            cp.ground_unit_orders.order({unit: 1})
-
+            budget = self.procure_for_cp(budget, cp)
         return budget
 
     def most_needed_unit_class(self, cp: ControlPoint) -> UnitClass:
@@ -201,6 +246,15 @@ class ProcurementAi:
         return budget, False
 
     def purchase_aircraft(self, budget: float) -> float:
+        # Prioritise reserve quotas before procurement requests (player prioritised)
+        for squadron, quota in self.reserve_quotas.items():
+            number = quota - squadron.owned_aircraft
+            while number > 0:
+                budget, fulfilled = self.fulfill_aircraft_request([squadron], 1, budget)
+                number -= 1
+                if not fulfilled:
+                    return budget
+
         for request in self.game.coalition_for(self.is_player).procurement_requests:
             squadrons = list(self.best_squadrons_for(request))
             if not squadrons:

@@ -48,6 +48,7 @@ class Coalition:
         self.armed_forces = ArmedForces(self.faction)
         self.transfers = PendingTransfers(game, player)
         self.callsign_generator = FlightCallsignGenerator(faction.country)
+        self.reserve_quotas = {}
 
         # Late initialized because the two coalitions in the game are mutually
         # dependent, so must be both constructed before this property can be set.
@@ -237,6 +238,11 @@ class Coalition:
             manage_front_line = True
             manage_aircraft = True
 
+        try:
+            self.reserve_quotas = self.reserve_quotas
+        except AttributeError:
+            self.reserve_quotas = {}
+
         self.budget = ProcurementAi(
             self.game,
             self.player,
@@ -244,6 +250,7 @@ class Coalition:
             manage_runways,
             manage_front_line,
             manage_aircraft,
+            self.reserve_quotas or {},
         ).spend_budget(self.budget)
 
     def add_procurement_request(self, request: AircraftProcurementRequest) -> None:

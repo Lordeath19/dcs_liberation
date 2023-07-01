@@ -196,7 +196,10 @@ class ProcurementAi:
             cp = self.ground_reinforcement_candidate()
             if cp is None:
                 break
-            budget = self.procure_for_cp(budget, cp)
+            post_budget = self.procure_for_cp(budget, cp)
+            # No unit was purchased, we ran out of money
+            if post_budget == budget:
+                break
         return budget
 
     def most_needed_unit_class(self, cp: ControlPoint) -> UnitClass:

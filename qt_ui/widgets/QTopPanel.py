@@ -26,6 +26,7 @@ from qt_ui.widgets.QIntelBox import QIntelBox
 from qt_ui.widgets.clientslots import MaxPlayerCount
 from qt_ui.widgets.simspeedcontrols import SimSpeedControls
 from qt_ui.windows.AirWingDialog import AirWingDialog
+from qt_ui.windows.BuyQuotasDialog import BuyQuotasDialog
 from qt_ui.windows.GameUpdateSignal import GameUpdateSignal
 from qt_ui.windows.PendingTransfersDialog import PendingTransfersDialog
 from qt_ui.windows.QWaitingForMissionResultWindow import QWaitingForMissionResultWindow
@@ -74,12 +75,18 @@ class QTopPanel(QFrame):
         self.transfers.setProperty("style", "btn-primary")
         self.transfers.clicked.connect(self.open_transfers)
 
+        self.air_quotas = QPushButton("Air Quotas")
+        self.air_quotas.setDisabled(True)
+        self.air_quotas.setProperty("style", "btn-primary")
+        self.air_quotas.clicked.connect(self.open_air_quotas)
+
         self.intel_box = QIntelBox(self.game)
 
         self.buttonBox = QGroupBox("Misc")
         self.buttonBoxLayout = QHBoxLayout()
         self.buttonBoxLayout.addWidget(self.air_wing)
         self.buttonBoxLayout.addWidget(self.transfers)
+        self.buttonBoxLayout.addWidget(self.air_quotas)
         self.buttonBox.setLayout(self.buttonBoxLayout)
 
         self.proceedBox = QGroupBox("Proceed")
@@ -118,6 +125,7 @@ class QTopPanel(QFrame):
 
         self.air_wing.setEnabled(True)
         self.transfers.setEnabled(True)
+        self.air_quotas.setEnabled(True)
 
         self.conditionsWidget.setCurrentTurn(game.turn, game.conditions)
 
@@ -148,6 +156,10 @@ class QTopPanel(QFrame):
 
     def open_transfers(self):
         self.dialog = PendingTransfersDialog(self.game_model)
+        self.dialog.show()
+
+    def open_air_quotas(self):
+        self.dialog = BuyQuotasDialog(self.game_model)
         self.dialog.show()
 
     def passTurn(self):

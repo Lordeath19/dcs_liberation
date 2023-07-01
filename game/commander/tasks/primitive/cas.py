@@ -41,4 +41,5 @@ class PlanCas(PackagePlanningTask[FrontLine]):
 
     def propose_flights(self) -> None:
         self.propose_flight(FlightType.CAS, 2)
-        self.propose_flight(FlightType.TARCAP, 2)
+        if not self.saturate:
+            self.propose_flight(FlightType.TARCAP, 2)

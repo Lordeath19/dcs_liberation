@@ -1,10 +1,10 @@
 ---
 name: Syria - Operation Waking Waters
 theater: Syria
-authors: Fuzzle
+authors: Lordeath19
 recommended_player_faction: USA 2010 (Waking Waters)
 recommended_enemy_faction: Syria 2010 (Waking Waters)
-description: <p>In this fictional scenario, a US/Israeli coalition must push north from the Israeli border, through Syria and Lebanon to Aleppo.</p><p><strong>Backstory:</strong> A Syrian-Lebanese joint force (with Russian materiel support) has attacked Israel, attmepting to cross the northern border. With the arrival of a US carrier group, Israel prepares its counterattack. The US Navy will handle the Beirut region's coastal arena, while the IAF will push through Damascus and the inland mountain ranges.</p>
+description: <p>In this fictional scenario, a US/Israeli coalition must push north from Cyprus, through Syria and Lebanon to Aleppo.</p><p><strong>Backstory:</strong> A Syrian-Lebanese joint force (with Russian materiel support) has attacked Israel, attmepting to cross the northern border. With the arrival of a US carrier group, Israel prepares its counterattack. The US Navy will handle the Beirut region's coastal arena, while the IAF will push through Damascus and the inland mountain ranges.</p>
 version: "10.1"
 miz: operation_waking_waters.miz
 performance: 2

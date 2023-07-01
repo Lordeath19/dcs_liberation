@@ -323,35 +323,6 @@ class ProcurementAi:
                 worst_supply = allocated.total
                 understaffed = cp
 
-        if understaffed is not None:
-            return understaffed
-
-        # Otherwise buy reserves, but don't exceed the amount defined in the settings.
-        # These units do not exist in the world until the CP becomes
-        # connected to an active front line, at which point all these units
-        # will suddenly appear at the gates of the newly captured CP.
-        #
-        # To avoid sudden overwhelming numbers of units we avoid buying
-        # many.
-        #
-        # Also, do not bother buying units at bases that will never connect
-        # to a front line.
-        for cp in self.owned_points:
-            if cp.is_global:
-                continue
-            if not cp.can_recruit_ground_units(self.game):
-                continue
-
-            allocated = cp.allocated_ground_units(
-                self.game.coalition_for(self.is_player).transfers
-            )
-            if allocated.total >= self.game.settings.reserves_procurement_target:
-                continue
-
-            if allocated.total < worst_supply:
-                worst_supply = allocated.total
-                understaffed = cp
-
         return understaffed
 
     def cost_ratio_of_ground_unit(

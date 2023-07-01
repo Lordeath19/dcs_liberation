@@ -1,3 +1,56 @@
+# 8.1.0
+
+Saves from 8.0.0 are compatible with 8.1.0
+
+## Features/Improvements
+
+* **[Engine]** Support for DCS 2.8.6.41363, including F-15E support.
+* **[UI]** Flight loadout/properties tab is now scrollable.
+
+## Fixes
+
+* **[Campaign]** Fixed liveries for premade squadrons all being off-by-one.
+* **[UI]** Fixed numbering of waypoints in the map and flight dialog (first waypoint is now 0 rather than 1).
+
+# 8.0.0
+
+Saves from 7.x are not compatible with 8.0.
+
+## Features/Improvements
+
+* **[Engine]** Support for DCS 2.8.6.41066, including the new Sinai map.
+* **[UI]** Limited size of overfull airbase display and added scrollbar.
+* **[UI]** Waypoint altitudes can be edited in Waypoints tab of Edit Flight window.
+* **[UI]** Moved air wing and transfer menus to the toolbar to improve UI fit on low resolution displays.
+* **[UI]** Added basic game over dialog.
+
+## Fixes
+
+* **[Campaign]** Fix bug introduced in 7.0 where map strike target deaths are no longer tracked.
+* **[Mission Generation]** Fix crash during mission generation caused by out of date DCS data for the Gazelle.
+* **[Mission Generation]** Fix crash during mission generation when DCS beacon data is inconsistent.
+
+# 7.1.0
+
+Saves from 7.0.0 are compatible with 7.1.0
+
+## Features/Improvements
+
+* **[Engine]** Support for Normandy 2 airfields.
+* **[Factions]** Replaced Patriot STRs "EWRs" with AN/FPS-117 for blue factions 1980 or newer.
+* **[Mission Generation]** Added option to prevent scud and V2 sites from firing at the start of the mission.
+* **[Mission Generation]** Added settings for controlling number of tactical commander, observer, JTAC, and game master slots.
+* **[Mission Planning]** Per-flight TOT offsets can now be set in the flight details UI. This allows individual flights to be scheduled ahead of or behind the rest of the package.
+* **[New Game Wizard]** The air wing configuration dialog will check for and reject overfull airbases before continuing when the new squadron rules are used.
+* **[New Game Wizard]** Closing the air wing configuration dialog will now cancel and return to the new game wizard rather than reverting changes and continuing.
+* **[New Game Wizard]** A warning will be displayed next to the new squadron rules button if the campaign predates the new rules and will likely require user intervention before continuing.
+* **[UI]** Parking capacity of each squadron's base is now shown during air wing configuration to avoid overcrowding bases when beginning the game with full squadrons.
+
+## Fixes
+
+* **[Mission Planning]** BAI is once again plannable against missile sites and coastal defense batteries.
+* **[UI]** Fixed formatting of departure time in flight details dialog.
+
 # 7.1.1
 
 Saves from 7.1.0 are compatible with 7.1.1
@@ -47,6 +100,7 @@ Saves from 6.x are not compatible with 7.0.
 * **[Mission Generation]** Wind speeds no longer follow a uniform distribution. Median wind speeds are now much lower and the standard deviation has been reduced considerably at altitude but increased somewhat at MSL.
 * **[Mission Generation]** Improved task generation for SEAD flights carrying TALDs.
 * **[Mission Generation]** Added task timeout for SEAD flights with TALDs to prevent AI from overflying the target.
+* **[Mission Generation]** Game state will automatically be checkpointed before fast-forwarding the mission, and restored on mission abort. This means that it's now possible to abort a mission and make changes without needing to manually re-load your game.
 * **[Modding]** Updated Community A-4E-C mod version support to 2.1.0 release.
 * **[Modding]** Add support for VSN F-4B and F-4C mod.
 * **[Modding]** Added support for AI C-47 mod.

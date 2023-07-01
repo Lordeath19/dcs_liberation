@@ -6,30 +6,16 @@ from starlette.responses import Response
 
 from game import Game
 from game.ato import Flight
-from game.ato.flightwaypoint import FlightWaypoint
-from game.ato.flightwaypointtype import FlightWaypointType
 from game.server import GameContext
 from game.server.leaflet import LeafletPoint
 from game.server.waypoints.models import FlightWaypointJs
 from game.sim import GameUpdateEvents
-from game.utils import meters
 
 router: APIRouter = APIRouter(prefix="/waypoints")
 
 
 def waypoints_for_flight(flight: Flight) -> list[FlightWaypointJs]:
-    departure = FlightWaypointJs.for_waypoint(
-        FlightWaypoint(
-            "TAKEOFF",
-            FlightWaypointType.TAKEOFF,
-            flight.departure.position,
-            meters(0),
-            "RADIO",
-        ),
-        flight,
-        0,
-    )
-    return [departure] + [
+    return [
         FlightWaypointJs.for_waypoint(w, flight, i)
         for i, w in enumerate(flight.flight_plan.waypoints, 1)
     ]
@@ -64,7 +50,7 @@ def set_position(
     if waypoint_idx == 0:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    waypoint = flight.flight_plan.waypoints[waypoint_idx - 1]
+    waypoint = flight.flight_plan.waypoints[waypoint_idx]
     waypoint.position = Point.from_latlng(
         LatLng(position.lat, position.lng), game.theater.terrain
     )

@@ -8,14 +8,14 @@ description: <p>Welcome to Vegas Nerve, an asymmetrical Red Flag Exercise scenar
 miz: exercise_vegas_nerve.miz
 performance: 1
 recommended_start_date: 2011-02-24
-version: "10.7"
+version: "10.9"
 squadrons:
 # Tonopah Airport
   17:
-    - primary: BARCAP
-      secondary: air-to-air
+    - primary: TARCAP
+      secondary: any
       aircraft:
-        - F-15C Eagle
+        - F-15E Strike Eagle (Suite 4+)
       size: 12
     - primary: Strike
       secondary: air-to-ground

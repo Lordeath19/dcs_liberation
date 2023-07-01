@@ -20,6 +20,7 @@ aircrafts:
   - F-14B Tomcat
   - F-15C Eagle
   - F-15E Strike Eagle
+  - F-15E Strike Eagle (Suite 4+)
   - F-16CM Fighting Falcon (Block 50)
   - F/A-18C Hornet (Lot 20)
   - S-3B Viking
@@ -65,7 +66,7 @@ naval_units:
   - CVN-74 John C. Stennis
 missiles: []
 air_defense_units:
-  - SAM Patriot STR
+  - EWR AN/FPS-117 Radar
   - M1097 Heavy HMMWV Avenger
   - M48 Chaparral
 requirements: {}

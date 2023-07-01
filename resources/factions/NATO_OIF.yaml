@@ -3,8 +3,8 @@ country: Combined Joint Task Forces Blue
 name: NATO OIF
 authors: Fuzzle
 description:
-  <p>A more modern NATO mixed faction reflecting the units involved in
-  Operation Iraqi Freedom.</p>
+  <p>A more modern NATO mixed faction reflecting the units involved in Operation
+  Iraqi Freedom.</p>
 aircrafts:
   - A-10C Thunderbolt II (Suite 3)
   - AH-64D Apache Longbow
@@ -19,6 +19,7 @@ aircrafts:
   - F-14B Tomcat
   - F-15C Eagle
   - F-15E Strike Eagle
+  - F-15E Strike Eagle (Suite 4+)
   - F-16CM Fighting Falcon (Block 50)
   - F-22A Raptor
   - F/A-18C Hornet (Lot 20)
@@ -75,7 +76,7 @@ naval_units:
   - CVN-74 John C. Stennis
 missiles: []
 air_defense_units:
-  - SAM Patriot STR
+  - EWR AN/FPS-117 Radar
   - M163 Vulcan Air Defense System
   - M1097 Heavy HMMWV Avenger
   - M48 Chaparral

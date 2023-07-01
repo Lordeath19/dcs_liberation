@@ -24,6 +24,7 @@ from game.persistence import SaveManager
 from game.server import EventStream, GameContext
 from game.server.dependencies import QtCallbacks, QtContext
 from game.theater import ControlPoint, MissionTarget, TheaterGroundObject
+from game.turnstate import TurnState
 from qt_ui import liberation_install
 from qt_ui.dialogs import Dialog
 from qt_ui.models import GameModel
@@ -33,10 +34,13 @@ from qt_ui.uncaughtexceptionhandler import UncaughtExceptionHandler
 from qt_ui.widgets.QTopPanel import QTopPanel
 from qt_ui.widgets.ato import QAirTaskingOrderPanel
 from qt_ui.widgets.map.QLiberationMap import QLiberationMap
+from qt_ui.windows.AirWingDialog import AirWingDialog
 from qt_ui.windows.BugReportDialog import BugReportDialog
 from qt_ui.windows.GameUpdateSignal import GameUpdateSignal
+from qt_ui.windows.PendingTransfersDialog import PendingTransfersDialog
 from qt_ui.windows.QDebriefingWindow import QDebriefingWindow
 from qt_ui.windows.basemenu.QBaseMenu2 import QBaseMenu2
+from qt_ui.windows.gameoverdialog import GameOverDialog
 from qt_ui.windows.groundobject.QGroundObjectMenu import QGroundObjectMenu
 from qt_ui.windows.infos.QInfoPanel import QInfoPanel
 from qt_ui.windows.logs.QLogsWindow import QLogsWindow
@@ -133,7 +137,14 @@ class QLiberationWindow(QMainWindow):
 
         vbox = QVBoxLayout()
         vbox.setContentsMargins(0, 0, 0, 0)
-        vbox.addWidget(QTopPanel(self.game_model, self.sim_controller, ui_flags))
+        vbox.addWidget(
+            QTopPanel(
+                self.game_model,
+                self.sim_controller,
+                ui_flags,
+                self.reset_to_pre_sim_checkpoint,
+            )
+        )
         vbox.addWidget(hbox)
 
         central_widget = QWidget()
@@ -143,6 +154,7 @@ class QLiberationWindow(QMainWindow):
     def connectSignals(self):
         GameUpdateSignal.get_instance().gameupdated.connect(self.setGame)
         GameUpdateSignal.get_instance().debriefingReceived.connect(self.onDebriefing)
+        GameUpdateSignal.get_instance().game_generated.connect(self.onGameGenerated)
 
     def initActions(self):
         self.newGameAction = QAction("&New Game", self)
@@ -214,6 +226,12 @@ class QLiberationWindow(QMainWindow):
         self.openNotesAction.setIcon(CONST.ICONS["Notes"])
         self.openNotesAction.triggered.connect(self.showNotesDialog)
 
+        self.openAirWingAction = QAction("Air Wing", self)
+        self.openAirWingAction.triggered.connect(self.showAirWingDialog)
+
+        self.openTransfersAction = QAction("Transfers", self)
+        self.openTransfersAction.triggered.connect(self.showTransfersDialog)
+
         self.importTemplatesAction = QAction("Import Layouts", self)
         self.importTemplatesAction.triggered.connect(self.import_templates)
 
@@ -246,6 +264,8 @@ class QLiberationWindow(QMainWindow):
         self.actions_bar.addAction(self.openSettingsAction)
         self.actions_bar.addAction(self.openStatsAction)
         self.actions_bar.addAction(self.openNotesAction)
+        self.actions_bar.addAction(self.openAirWingAction)
+        self.actions_bar.addAction(self.openTransfersAction)
 
     def initMenuBar(self):
         self.menu = self.menuBar()
@@ -315,7 +335,6 @@ class QLiberationWindow(QMainWindow):
     def newGame(self):
         wizard = NewGameWizard(self)
         wizard.show()
-        wizard.accepted.connect(lambda: self.onGameGenerated(wizard.generatedGame))
 
     def openFile(self):
         if (
@@ -339,6 +358,23 @@ class QLiberationWindow(QMainWindow):
                 self.updateWindowTitle(Path(file[0]))
             except Exception:
                 logging.exception("Error loading save game %s", file[0])
+
+    def reset_to_pre_sim_checkpoint(self) -> None:
+        """Loads the game that was saved before pressing the take-off button.
+
+        A checkpoint will be saved when the player presses take-off to save their state
+        before the mission simulation begins. If the mission is aborted, we usually want
+        to reset to the pre-simulation state to allow players to effectively "rewind",
+        since they probably aborted so that they could make changes. Implementing rewind
+        for real is impractical, but checkpoints are easy.
+        """
+        if self.game is None:
+            raise RuntimeError(
+                "Cannot reset to pre-sim checkpoint when no game is loaded"
+            )
+        GameUpdateSignal.get_instance().game_loaded.emit(
+            self.game.save_manager.load_pre_sim_checkpoint()
+        )
 
     def saveGame(self):
         logging.info("Saving game")
@@ -502,6 +538,14 @@ class QLiberationWindow(QMainWindow):
         self.dialog = QNotesWindow(self.game)
         self.dialog.show()
 
+    def showAirWingDialog(self) -> None:
+        self.dialog = AirWingDialog(self.game_model, self)
+        self.dialog.show()
+
+    def showTransfersDialog(self) -> None:
+        self.dialog = PendingTransfersDialog(self.game_model)
+        self.dialog.show()
+
     def import_templates(self):
         LAYOUTS.import_templates()
 
@@ -516,7 +560,14 @@ class QLiberationWindow(QMainWindow):
     def onDebriefing(self, debrief: Debriefing):
         logging.info("On Debriefing")
         self.debriefing = QDebriefingWindow(debrief)
-        self.debriefing.show()
+        self.debriefing.exec()
+
+        state = self.game.check_win_loss()
+        if state is not TurnState.CONTINUE:
+            GameOverDialog(won=state is TurnState.WIN, parent=self).exec()
+        else:
+            self.game.pass_turn()
+            GameUpdateSignal.get_instance().updateGame(self.game)
 
     def open_tgo_info_dialog(self, tgo: TheaterGroundObject) -> None:
         QGroundObjectMenu(self, tgo, tgo.control_point, self.game).show()

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Optional, TYPE_CHECKING
+from typing import Any, Optional, TYPE_CHECKING, Dict
 
 from faker import Faker
 
@@ -16,7 +16,7 @@ from game.navmesh import NavMesh
 from game.orderedset import OrderedSet
 from game.procurement import AircraftProcurementRequest, ProcurementAi
 from game.profiling import MultiEventTracer, logged_duration
-from game.squadrons import AirWing
+from game.squadrons import AirWing, Squadron
 from game.theater.bullseye import Bullseye
 from game.theater.transitnetwork import TransitNetwork, TransitNetworkBuilder
 from game.threatzones import ThreatZones
@@ -48,7 +48,7 @@ class Coalition:
         self.armed_forces = ArmedForces(self.faction)
         self.transfers = PendingTransfers(game, player)
         self.callsign_generator = FlightCallsignGenerator(faction.country)
-        self.reserve_quotas = {}
+        self.reserve_quotas: Dict[Squadron, int] = {}
 
         # Late initialized because the two coalitions in the game are mutually
         # dependent, so must be both constructed before this property can be set.

@@ -36,6 +36,7 @@ from qt_ui.widgets.ato import QAirTaskingOrderPanel
 from qt_ui.widgets.map.QLiberationMap import QLiberationMap
 from qt_ui.windows.AirWingDialog import AirWingDialog
 from qt_ui.windows.BugReportDialog import BugReportDialog
+from qt_ui.windows.BuyQuotasDialog import BuyQuotasDialog
 from qt_ui.windows.GameUpdateSignal import GameUpdateSignal
 from qt_ui.windows.PendingTransfersDialog import PendingTransfersDialog
 from qt_ui.windows.QDebriefingWindow import QDebriefingWindow
@@ -232,6 +233,9 @@ class QLiberationWindow(QMainWindow):
         self.openTransfersAction = QAction("Transfers", self)
         self.openTransfersAction.triggered.connect(self.showTransfersDialog)
 
+        self.openBuyQuotasAction = QAction("Buy Quotas", self)
+        self.openBuyQuotasAction.triggered.connect(self.showBuyQuotasDialog)
+
         self.importTemplatesAction = QAction("Import Layouts", self)
         self.importTemplatesAction.triggered.connect(self.import_templates)
 
@@ -266,6 +270,7 @@ class QLiberationWindow(QMainWindow):
         self.actions_bar.addAction(self.openNotesAction)
         self.actions_bar.addAction(self.openAirWingAction)
         self.actions_bar.addAction(self.openTransfersAction)
+        self.actions_bar.addAction(self.openBuyQuotasAction)
 
     def initMenuBar(self):
         self.menu = self.menuBar()
@@ -544,6 +549,10 @@ class QLiberationWindow(QMainWindow):
 
     def showTransfersDialog(self) -> None:
         self.dialog = PendingTransfersDialog(self.game_model)
+        self.dialog.show()
+
+    def showBuyQuotasDialog(self) -> None:
+        self.dialog = BuyQuotasDialog(self.game_model)
         self.dialog.show()
 
     def import_templates(self):

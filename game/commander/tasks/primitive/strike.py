@@ -5,12 +5,15 @@ from typing import Any
 
 from game.commander.tasks.packageplanningtask import PackagePlanningTask
 from game.commander.theaterstate import TheaterState
+from game.settings.settings import AutoAtoTasking
 from game.theater.theatergroundobject import TheaterGroundObject
 from game.ato.flighttype import FlightType
 
 
 @dataclass
 class PlanStrike(PackagePlanningTask[TheaterGroundObject]):
+    minimal_tasking = AutoAtoTasking.Full
+
     def preconditions_met(self, state: TheaterState) -> bool:
         if self.target not in state.strike_targets:
             return False

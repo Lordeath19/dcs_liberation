@@ -78,6 +78,7 @@ Saves from 8.0.0 are compatible with 8.1.0
 * **[UI]** Added buy quotas. player can now specify how many of each aircraft the AI prioritizes to re-buy before any other purchases
 * **[UI]** Added option to limit AI tasks. Basic flights: Refuel+Aewc+Barcap, Limited: Basic+CAS or Full (normal AI)
 * **[UI]** Added option to switch sides to the red commander, selling, tasking and buying operates the same as blue
+* **[UI]** Added buttons to add all flyable and non-flyable aircraft from a faction when creating a campaign
 * **[Mission Generation]** Fixed issue with each cas flight requiring separate TARCAP flights. blocking multiple Cas flights taking place in a single turn
 
 ## Fixes

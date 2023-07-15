@@ -94,7 +94,7 @@ class ProcurementAi:
             armor_budget = budget * self.calculate_ground_unit_budget_share()
             budget -= armor_budget
             budget += self.reinforce_front_line(armor_budget)
-
+        budget = self.purchase_reserve_quotas(budget)
         if self.manage_aircraft:
             budget = self.purchase_aircraft(budget)
         if self.manage_front_line:
@@ -248,7 +248,7 @@ class ProcurementAi:
             return budget, True
         return budget, False
 
-    def purchase_aircraft(self, budget: float) -> float:
+    def purchase_reserve_quotas(self, budget: float) -> float:
         # Prioritise reserve quotas before procurement requests (player prioritised)
         for squadron, quota in self.reserve_quotas.items():
             number = quota - squadron.owned_aircraft
@@ -257,7 +257,9 @@ class ProcurementAi:
                 number -= 1
                 if not fulfilled:
                     return budget
+        return budget
 
+    def purchase_aircraft(self, budget: float) -> float:
         for request in self.game.coalition_for(self.is_player).procurement_requests:
             squadrons = list(self.best_squadrons_for(request))
             if not squadrons:

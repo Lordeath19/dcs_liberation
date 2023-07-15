@@ -75,11 +75,16 @@ Saves from 8.0.0 are compatible with 8.1.0
 
 * **[Engine]** Support for DCS 2.8.6.41363, including F-15E support.
 * **[UI]** Flight loadout/properties tab is now scrollable.
+* **[UI]** Added buy quotas. player can now specify how many of each aircraft the AI prioritizes to re-buy before any other purchases
+* **[UI]** Added option to limit AI tasks. Basic flights: Refuel+Aewc+Barcap, Limited: Basic+CAS or Full (normal AI)
+* **[UI]** Added option to switch sides to the red commander, selling, tasking and buying operates the same as blue
+* **[Mission Generation]** Fixed issue with each cas flight requiring separate TARCAP flights. blocking multiple Cas flights taking place in a single turn
 
 ## Fixes
 
 * **[Campaign]** Fixed liveries for premade squadrons all being off-by-one.
 * **[UI]** Fixed numbering of waypoints in the map and flight dialog (first waypoint is now 0 rather than 1).
+* **[Mission Generation]** Fixed issue with warehousing having unavailable loadouts
 
 # 8.0.0
 

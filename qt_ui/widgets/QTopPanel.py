@@ -70,29 +70,7 @@ class QTopPanel(QFrame):
 
         self.factionsInfos = QFactionsInfos(self.game)
 
-        self.air_wing = QPushButton("Air Wing")
-        self.air_wing.setDisabled(True)
-        self.air_wing.setProperty("style", "btn-primary")
-        self.air_wing.clicked.connect(self.open_air_wing)
-
-        self.transfers = QPushButton("Transfers")
-        self.transfers.setDisabled(True)
-        self.transfers.setProperty("style", "btn-primary")
-        self.transfers.clicked.connect(self.open_transfers)
-
-        self.air_quotas = QPushButton("Air Quotas")
-        self.air_quotas.setDisabled(True)
-        self.air_quotas.setProperty("style", "btn-primary")
-        self.air_quotas.clicked.connect(self.open_air_quotas)
-
         self.intel_box = QIntelBox(self.game)
-
-        self.buttonBox = QGroupBox("Misc")
-        self.buttonBoxLayout = QHBoxLayout()
-        self.buttonBoxLayout.addWidget(self.air_wing)
-        self.buttonBoxLayout.addWidget(self.transfers)
-        self.buttonBoxLayout.addWidget(self.air_quotas)
-        self.buttonBox.setLayout(self.buttonBoxLayout)
 
         self.proceedBox = QGroupBox("Proceed")
         self.proceedBoxLayout = QHBoxLayout()

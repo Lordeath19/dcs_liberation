@@ -28,6 +28,13 @@ class AutoAtoBehavior(Enum):
     Prefer = "Prefer player pilots"
 
 
+@unique
+class AutoAtoTasking(Enum):
+    AirDefence = "Plan AEWC, Refuel and BARCAP"
+    Limited = "Plan AEWC, Refuel, BARCAP and CAS"
+    Full = "Plan all tasks"
+
+
 DIFFICULTY_PAGE = "Difficulty"
 
 AI_DIFFICULTY_SECTION = "AI Difficulty"
@@ -314,6 +321,17 @@ class Settings:
         detail=(
             "Aircraft auto-purchase is directed by the auto-planner, so disabling "
             "auto-planning disables auto-purchase."
+        ),
+    )
+    auto_ato_tasking: AutoAtoBehavior = choices_option(
+        "Automatic package planning limitation",
+        CAMPAIGN_MANAGEMENT_PAGE,
+        HQ_AUTOMATION_SECTION,
+        default=AutoAtoTasking.Full,
+        choices={v.value: v for v in AutoAtoTasking},
+        detail=(
+            "Aircraft auto-purchase is directed by the auto-planner, so limiting "
+            "auto tasking limits auto-purchase."
         ),
     )
     auto_ato_player_missions_asap: bool = boolean_option(

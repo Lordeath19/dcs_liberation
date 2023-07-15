@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 from game.commander.tasks.packageplanningtask import PackagePlanningTask
 from game.commander.theaterstate import TheaterState
+from game.settings.settings import AutoAtoTasking
 from game.theater import ControlPoint
 from game.ato.flighttype import FlightType
 
@@ -14,6 +15,8 @@ class PlanOcaStrike(PackagePlanningTask[ControlPoint]):
 
     def preconditions_met(self, state: TheaterState) -> bool:
         if self.target not in state.oca_targets:
+            return False
+        elif state.context.settings.auto_ato_tasking is not AutoAtoTasking.Full:
             return False
         if not self.target_area_preconditions_met(state):
             return False

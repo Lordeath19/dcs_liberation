@@ -5,6 +5,7 @@ from typing import Any
 
 from game.commander.tasks.packageplanningtask import PackagePlanningTask
 from game.commander.theaterstate import TheaterState
+from game.settings.settings import AutoAtoTasking
 from game.theater.theatergroundobject import TheaterGroundObject
 from game.ato.flighttype import FlightType
 
@@ -13,6 +14,8 @@ from game.ato.flighttype import FlightType
 class PlanStrike(PackagePlanningTask[TheaterGroundObject]):
     def preconditions_met(self, state: TheaterState) -> bool:
         if self.target not in state.strike_targets:
+            return False
+        elif state.context.settings.auto_ato_tasking is not AutoAtoTasking.Full:
             return False
         if not self.target_area_preconditions_met(state):
             return False

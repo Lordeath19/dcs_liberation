@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from game.commander.missionproposals import EscortType
 from game.commander.tasks.packageplanningtask import PackagePlanningTask
 from game.commander.theaterstate import TheaterState
+from game.settings.settings import AutoAtoTasking
 from game.theater.theatergroundobject import IadsGroundObject
 from game.ato.flighttype import FlightType
 
@@ -16,6 +17,8 @@ class PlanDead(PackagePlanningTask[IadsGroundObject]):
             self.target not in state.threatening_air_defenses
             and self.target not in state.detecting_air_defenses
         ):
+            return False
+        elif state.context.settings.auto_ato_tasking is not AutoAtoTasking.Full:
             return False
         if not self.target_area_preconditions_met(state, ignore_iads=True):
             return False

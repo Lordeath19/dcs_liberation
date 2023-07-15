@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from game.commander.missionproposals import EscortType
 from game.commander.tasks.packageplanningtask import PackagePlanningTask
 from game.commander.theaterstate import TheaterState
+from game.settings.settings import AutoAtoTasking
 from game.theater.theatergroundobject import NavalGroundObject
 from game.ato.flighttype import FlightType
 
@@ -13,6 +14,8 @@ from game.ato.flighttype import FlightType
 class PlanAntiShip(PackagePlanningTask[NavalGroundObject]):
     def preconditions_met(self, state: TheaterState) -> bool:
         if self.target not in state.threatening_air_defenses:
+            return False
+        elif state.context.settings.auto_ato_tasking is not AutoAtoTasking.Full:
             return False
         if not self.target_area_preconditions_met(state, ignore_iads=True):
             return False

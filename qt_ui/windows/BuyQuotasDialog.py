@@ -17,8 +17,10 @@ from PySide6.QtWidgets import (
 )
 
 from game.dcs.aircrafttype import AircraftType
+from game.procurement import ProcurementAi
 from game.squadrons import Squadron
 from qt_ui.models import GameModel
+from qt_ui.windows.GameUpdateSignal import GameUpdateSignal
 from qt_ui.windows.QUnitInfoWindow import QUnitInfoWindow
 
 
@@ -192,8 +194,22 @@ class BuyQuotasDialog(QDialog):
             group.update_state()
         coalition.reserve_quotas = self.reserve_squadrons
 
+        coalition.budget = ProcurementAi(
+            coalition.game,
+            self.game_model.game.is_player_blue,
+            coalition.faction,
+            False,
+            False,
+            False,
+            coalition.reserve_quotas or {},
+        ).spend_budget(coalition.budget)
+
+    def update_available_budget(self) -> None:
+        GameUpdateSignal.get_instance().updateBudget(self.game_model.game)
+
     def post_transaction_update(self) -> None:
         self.update_purchase_controls()
+        self.update_available_budget()
 
 
 class ReserveGroup(QGroupBox):

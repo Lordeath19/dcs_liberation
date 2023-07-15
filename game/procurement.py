@@ -253,7 +253,7 @@ class ProcurementAi:
 
         # Prioritise reserve quotas before procurement requests (player prioritised)
         for squadron, quota in self.reserve_quotas.items():
-            number = quota - squadron.owned_aircraft
+            number = quota - squadron.owned_aircraft - squadron.pending_deliveries
             while number > 0:
                 budget, fulfilled = self.fulfill_aircraft_request([squadron], 1, budget)
                 number -= 1

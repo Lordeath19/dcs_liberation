@@ -323,7 +323,7 @@ class Settings:
             "auto-planning disables auto-purchase."
         ),
     )
-    auto_ato_tasking: AutoAtoBehavior = choices_option(
+    auto_ato_tasking: AutoAtoTasking = choices_option(
         "Automatic package planning limitation",
         CAMPAIGN_MANAGEMENT_PAGE,
         HQ_AUTOMATION_SECTION,

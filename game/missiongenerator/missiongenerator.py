@@ -167,7 +167,7 @@ class MissionGenerator:
             allowed_weapons = [
                 weapon for weapon in all_weapons if weapon.available_on(self.game.date)
             ]
-        warehouse.add_to_warehouse(all_airports, allowed_weapons)
+            warehouse.add_to_warehouse(all_airports, allowed_weapons)
         self.mission.warehouses = warehouse.warehouses
 
     def add_airfields_to_unit_map(self) -> None:

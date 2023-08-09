@@ -29,6 +29,20 @@ class AutoAtoBehavior(Enum):
 
 
 @unique
+class RandomLocation(Enum):
+    """The location randomization of sam sites in game.
+    Exclude_sam - Include all ground mobile units except sams
+    Exclude_lorad - Include all sams except sams with LORAD as a tasking (SA-10/PATRIOT)
+    All - Include all units with no regard to the operational range
+    """
+
+    Disabled = "Disabled"
+    Exclude_sam = "Exclude SAMs"
+    Exclude_lorad = "Exclude lorad"
+    All = "All"
+
+
+@unique
 class AutoAtoTasking(Enum):
     AirDefence = "Plan AEWC, Refuel and BARCAP"
     Limited = "Plan AEWC, Refuel, BARCAP and CAS"
@@ -124,6 +138,21 @@ class Settings:
         "No night missions",
         page=DIFFICULTY_PAGE,
         section=MISSION_DIFFICULTY_SECTION,
+        default=False,
+    )
+    randomize_location: str = choices_option(
+        "Ground Location Randomization",
+        page=DIFFICULTY_PAGE,
+        section=MISSION_DIFFICULTY_SECTION,
+        choices={v.value: v for v in RandomLocation},
+        detail="Note: This options disables strike tasks for affected units.",
+        default=RandomLocation.Disabled,
+    )
+    randomize_sam_location_ignore_static: str = boolean_option(
+        "Randomize location of static SAMs",
+        page=DIFFICULTY_PAGE,
+        section=MISSION_DIFFICULTY_SECTION,
+        detail="Applies if SAM randomization is enabled",
         default=False,
     )
     # Mission Restrictions

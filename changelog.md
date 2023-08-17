@@ -87,6 +87,7 @@ Saves from 8.0.0 are compatible with 8.1.0
 * **[Campaign]** Fixed liveries for premade squadrons all being off-by-one.
 * **[UI]** Fixed numbering of waypoints in the map and flight dialog (first waypoint is now 0 rather than 1).
 * **[Mission Generation]** Fixed issue with warehousing having unavailable loadouts
+* **[Mission Generation]** Add all flyable aircraft now supports bugged (task-less) aircraft
 
 # 8.0.0
 

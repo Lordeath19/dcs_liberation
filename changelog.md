@@ -80,6 +80,7 @@ Saves from 8.0.0 are compatible with 8.1.0
 * **[UI]** Added option to switch sides to the red commander, selling, tasking and buying operates the same as blue
 * **[UI]** Added buttons to add all flyable and non-flyable aircraft from a faction when creating a campaign
 * **[Mission Generation]** Fixed issue with each cas flight requiring separate TARCAP flights. blocking multiple Cas flights taking place in a single turn
+* **[Mission Generation]** Added difficulty setting to randomize location of mobile units and SAMs
 
 ## Fixes
 

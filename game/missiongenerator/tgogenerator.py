@@ -464,7 +464,7 @@ class MissileSiteGenerator(GroundObjectGenerator):
 
 
 class IadsSiteGenerator(GroundObjectGenerator):
-    def create_fake_groups(self):
+    def create_fake_groups(self) -> None:
         for group in self.ground_object.groups:
             vehicle_units = []
             for unit in group.units:
@@ -520,7 +520,7 @@ class IadsSiteGenerator(GroundObjectGenerator):
             raise RuntimeError(f"Error creating VehicleGroup for {group_name}")
         return vehicle_group
 
-    def generate(self):
+    def generate(self) -> None:
         if self.culled:
             return
         if self.ground_object.should_randomize_location:

@@ -140,7 +140,7 @@ class Settings:
         section=MISSION_DIFFICULTY_SECTION,
         default=False,
     )
-    randomize_location: str = choices_option(
+    randomize_location: RandomLocation = choices_option(
         "Ground Location Randomization",
         page=DIFFICULTY_PAGE,
         section=MISSION_DIFFICULTY_SECTION,
@@ -148,7 +148,7 @@ class Settings:
         detail="Note: This options disables strike tasks for affected units.",
         default=RandomLocation.Disabled,
     )
-    randomize_sam_location_ignore_static: str = boolean_option(
+    randomize_sam_location_ignore_static: bool = boolean_option(
         "Randomize location of static SAMs",
         page=DIFFICULTY_PAGE,
         section=MISSION_DIFFICULTY_SECTION,

@@ -41,7 +41,7 @@ class PackagePlanningTask(TheaterCommanderTask, Generic[MissionTargetT]):
     def __post_init__(self) -> None:
         self.flights = []
 
-    def should_plan(self, state: TheaterState):
+    def should_plan(self, state: TheaterState) -> bool:
         return not state.context.coalition.player or list(AutoAtoTasking).index(
             state.context.settings.auto_ato_tasking
         ) >= list(AutoAtoTasking).index(self.minimal_tasking)

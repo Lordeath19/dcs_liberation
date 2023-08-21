@@ -1,9 +1,11 @@
+from unittest.mock import MagicMock
+
 import pytest
 from typing import Any
 
 from dcs.mapping import Point
-from dcs.terrain import Terrain
 from game.ato.flighttype import FlightType
+from game.settings.settings import RandomLocation
 from game.theater.presetlocation import PresetLocation
 from game.theater.theatergroundobject import (
     BuildingGroundObject,
@@ -39,6 +41,13 @@ def test_mission_types_friendly(mocker: Any) -> None:
     # Patch is_friendly as it's difficult to set up a proper ControlPoint
     mocker.patch("game.theater.controlpoint.OffMapSpawn.is_friendly", return_value=True)
 
+    coalition_mock = MagicMock()
+    coalition_mock.game.settings.randomize_location = RandomLocation.Disabled
+    mocker.patch(
+        "game.theater.controlpoint.ControlPoint.coalition",
+        new_callable=mocker.PropertyMock,
+        return_value=coalition_mock,
+    )
     for ground_object_type in [
         CarrierGroundObject,
         LhaGroundObject,
@@ -88,6 +97,14 @@ def test_mission_types_enemy(mocker: Any) -> None:
         "game.theater.controlpoint.OffMapSpawn.is_friendly", return_value=False
     )
 
+    coalition_mock = MagicMock()
+    coalition_mock.game.settings.randomize_location = RandomLocation.Disabled
+    mocker.patch(
+        "game.theater.controlpoint.ControlPoint.coalition",
+        new_callable=mocker.PropertyMock,
+        return_value=coalition_mock,
+    )
+
     building = BuildingGroundObject(
         name="test",
         category="ammo",
@@ -102,6 +119,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
     assert FlightType.TARCAP in mission_types
     assert FlightType.SEAD_ESCORT in mission_types
     assert FlightType.SWEEP in mission_types
+    assert FlightType.CAS in mission_types
 
     iads_building = IadsBuildingGroundObject(
         name="test",
@@ -118,6 +136,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
     assert FlightType.SEAD_ESCORT in mission_types
     assert FlightType.SWEEP in mission_types
     assert FlightType.DEAD in mission_types
+    assert FlightType.CAS in mission_types
 
     for ground_object_type in [
         CarrierGroundObject,
@@ -138,6 +157,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
         assert FlightType.TARCAP in mission_types
         assert FlightType.SEAD_ESCORT in mission_types
         assert FlightType.SWEEP in mission_types
+    assert FlightType.CAS in mission_types
 
     sam = SamGroundObject(
         name="test",
@@ -154,6 +174,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
     assert FlightType.TARCAP in mission_types
     assert FlightType.SEAD_ESCORT in mission_types
     assert FlightType.SWEEP in mission_types
+    assert FlightType.CAS in mission_types
 
     ewr = EwrGroundObject(
         name="test",
@@ -169,6 +190,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
     assert FlightType.TARCAP in mission_types
     assert FlightType.SEAD_ESCORT in mission_types
     assert FlightType.SWEEP in mission_types
+    assert FlightType.CAS in mission_types
 
     for ground_object_type in [  # type: ignore
         CoastalSiteGroundObject,
@@ -188,6 +210,7 @@ def test_mission_types_enemy(mocker: Any) -> None:
         assert FlightType.TARCAP in mission_types
         assert FlightType.SEAD_ESCORT in mission_types
         assert FlightType.SWEEP in mission_types
+        assert FlightType.CAS in mission_types
 
     vehicles = VehicleGroupGroundObject(
         name="test",
@@ -203,3 +226,4 @@ def test_mission_types_enemy(mocker: Any) -> None:
     assert FlightType.TARCAP in mission_types
     assert FlightType.SEAD_ESCORT in mission_types
     assert FlightType.SWEEP in mission_types
+    assert FlightType.CAS in mission_types

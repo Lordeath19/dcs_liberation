@@ -4,12 +4,15 @@ from dataclasses import dataclass
 
 from game.commander.tasks.packageplanningtask import PackagePlanningTask
 from game.commander.theaterstate import TheaterState
+from game.settings.settings import AutoAtoTasking
 from game.theater.theatergroundobject import VehicleGroupGroundObject
 from game.ato.flighttype import FlightType
 
 
 @dataclass
 class PlanBai(PackagePlanningTask[VehicleGroupGroundObject]):
+    minimal_tasking = AutoAtoTasking.Full
+
     def preconditions_met(self, state: TheaterState) -> bool:
         if not state.has_battle_position(self.target):
             return False

@@ -29,12 +29,13 @@ class ControlPointJs(BaseModel):
         destination = None
         if control_point.target_position is not None:
             destination = control_point.target_position.latlng()
+        for_player = not control_point.coalition.game.settings.show_red_ato
         return ControlPointJs(
             id=control_point.id,
             name=control_point.name,
             blue=control_point.captured,
             position=control_point.position.latlng(),
-            mobile=control_point.moveable and control_point.captured,
+            mobile=control_point.moveable and control_point.is_friendly(for_player),
             destination=destination,
             sidc=str(control_point.sidc()),
         )

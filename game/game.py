@@ -151,6 +151,14 @@ class Game:
         yield self.blue
         yield self.red
 
+    @property
+    def is_player_blue(self) -> bool:
+        return not self.settings.show_red_ato
+
+    @property
+    def side(self) -> Coalition:
+        return self.blue if self.is_player_blue else self.red
+
     def point_in_world(self, x: float, y: float) -> Point:
         return Point(x, y, self.theater.terrain)
 
@@ -533,6 +541,13 @@ class Game:
                 # BARCAPs will be planned at most locations on smaller theaters,
                 # rendering culling fairly useless. BARCAP packages don't really
                 # need the ground detail since they're defensive. SAMs nearby
+                # are only interesting if there are enemies in the area, and if
+                # there are they won't be culled because of the enemy's mission.
+                continue
+            elif package.primary_task in [FlightType.AEWC, FlightType.REFUELING]:
+                # AWECs will be planned the farthest control point
+                # rendering culling fairly useless. AEWC packages don't really
+                # need the ground detail since they're behind friendly lines. SAMs nearby
                 # are only interesting if there are enemies in the area, and if
                 # there are they won't be culled because of the enemy's mission.
                 continue

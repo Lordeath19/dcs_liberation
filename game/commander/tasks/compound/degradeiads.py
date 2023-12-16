@@ -10,7 +10,18 @@ from game.theater.theatergroundobject import IadsGroundObject, NavalGroundObject
 
 class DegradeIads(CompoundTask[TheaterState]):
     def each_valid_method(self, state: TheaterState) -> Iterator[Method[TheaterState]]:
-        for air_defense in state.threatening_air_defenses:
+        threatening_radar_defenses = filter(
+            lambda defense: defense.has_live_radar_sam, state.threatening_air_defenses
+        )
+        threatening_aaa_defenses = filter(
+            lambda defense: not defense.has_live_radar_sam,
+            state.threatening_air_defenses,
+        )
+        combined_defenses = list(threatening_radar_defenses) + list(
+            threatening_aaa_defenses
+        )
+
+        for air_defense in combined_defenses:
             yield [self.plan_against(air_defense)]
         for detector in state.detecting_air_defenses:
             yield [self.plan_against(detector)]

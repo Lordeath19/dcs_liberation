@@ -40,7 +40,7 @@ class QFlightCreator(QDialog):
         self.game = game
         self.package = package
         self.custom_name_text = None
-        self.country = self.game.blue.country_name
+        self.country = self.game.side.country_name
 
         # Make dialog modal to prevent background windows to close unexpectedly.
         self.setModal(True)
@@ -51,14 +51,17 @@ class QFlightCreator(QDialog):
         layout = QVBoxLayout()
 
         self.task_selector = QFlightTypeComboBox(
-            self.game.theater, package.target, self.game.lua_plugin_manager
+            self.game.theater,
+            package.target,
+            self.game.lua_plugin_manager,
+            self.game.is_player_blue,
         )
         self.task_selector.setCurrentIndex(0)
         self.task_selector.currentIndexChanged.connect(self.on_task_changed)
         layout.addLayout(QLabeledWidget("Task:", self.task_selector))
 
         self.aircraft_selector = QAircraftTypeSelector(
-            self.game.blue.air_wing.best_available_aircrafts_for(
+            self.game.side.air_wing.best_available_aircrafts_for(
                 self.task_selector.currentData()
             )
         )
@@ -67,7 +70,7 @@ class QFlightCreator(QDialog):
         layout.addLayout(QLabeledWidget("Aircraft:", self.aircraft_selector))
 
         self.squadron_selector = SquadronSelector(
-            self.game.air_wing_for(player=True),
+            self.game.air_wing_for(player=self.game.is_player_blue),
             self.task_selector.currentData(),
             self.aircraft_selector.currentData(),
         )
@@ -229,7 +232,7 @@ class QFlightCreator(QDialog):
     def on_task_changed(self, index: int) -> None:
         task = self.task_selector.itemData(index)
         self.aircraft_selector.update_items(
-            self.game.blue.air_wing.best_available_aircrafts_for(task)
+            self.game.side.air_wing.best_available_aircrafts_for(task)
         )
         self.squadron_selector.update_items(task, self.aircraft_selector.currentData())
 

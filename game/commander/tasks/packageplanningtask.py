@@ -14,6 +14,7 @@ from game.commander.packagefulfiller import PackageFulfiller
 from game.commander.tasks.theatercommandertask import TheaterCommanderTask
 from game.commander.theaterstate import TheaterState
 from game.settings import AutoAtoBehavior
+from game.settings.settings import AutoAtoTasking
 from game.theater import MissionTarget
 from game.theater.theatergroundobject import IadsGroundObject, NavalGroundObject
 from game.utils import Distance, meters
@@ -40,11 +41,18 @@ class PackagePlanningTask(TheaterCommanderTask, Generic[MissionTargetT]):
     def __post_init__(self) -> None:
         self.flights = []
 
+    def should_plan(self, state: TheaterState) -> bool:
+        return not state.context.coalition.player or list(AutoAtoTasking).index(
+            state.context.settings.auto_ato_tasking
+        ) >= list(AutoAtoTasking).index(self.minimal_tasking)
+
     def preconditions_met(self, state: TheaterState) -> bool:
         if (
             state.context.coalition.player
             and state.context.settings.auto_ato_behavior is AutoAtoBehavior.Disabled
         ):
+            return False
+        if not self.should_plan(state):
             return False
         return self.fulfill_mission(state)
 
@@ -168,9 +176,8 @@ class PackagePlanningTask(TheaterCommanderTask, Generic[MissionTargetT]):
             if detector not in state.detecting_air_defenses:
                 state.detecting_air_defenses.append(detector)
 
-        if not ignore_iads:
-            for iads_threat in self.iter_iads_threats(state):
-                threatened = True
-                if iads_threat not in state.threatening_air_defenses:
-                    state.threatening_air_defenses.append(iads_threat)
-        return not threatened
+        for iads_threat in self.iter_iads_threats(state):
+            threatened = True
+            if iads_threat not in state.threatening_air_defenses:
+                state.threatening_air_defenses.append(iads_threat)
+        return not threatened or ignore_iads

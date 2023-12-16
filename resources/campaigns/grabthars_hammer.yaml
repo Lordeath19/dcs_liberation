@@ -36,9 +36,9 @@ squadrons:
         - F-15C Eagle
       size: 8
     - primary: BAI
-      secondary: air-to-ground
+      secondary: any
       aircraft:
-        - F-15E Strike Eagle
+        - F-15E Strike Eagle (Suite 4+)
       size: 8
     - primary: Refueling
       aircraft:

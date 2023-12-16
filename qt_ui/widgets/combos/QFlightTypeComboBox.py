@@ -1,4 +1,5 @@
 """Combo box for selecting a flight's task type."""
+from typing import Optional
 
 from PySide6.QtWidgets import QComboBox
 
@@ -15,11 +16,12 @@ class QFlightTypeComboBox(QComboBox):
         theater: ConflictTheater,
         target: MissionTarget,
         lua_plugin_manager: LuaPluginManager,
+        for_player: Optional[bool] = True,
     ) -> None:
         super().__init__()
         self.theater = theater
         self.target = target
-        for mission_type in self.target.mission_types(for_player=True):
+        for mission_type in self.target.mission_types(for_player=for_player):
             if (
                 mission_type == FlightType.AIR_ASSAULT
                 and not lua_plugin_manager.is_plugin_enabled("ctld")

@@ -49,23 +49,14 @@ class PydcsWaypointBuilder:
         return self.waypoint.name
 
     def build(self) -> MovingPoint:
+        waypoint_unit_type = self.flight.unit_type.dcs_unit_type
+        unit_type_max_speed = waypoint_unit_type.max_speed * 0.85
+        # Some aircraft support afterburner, we should factor that into our cruise speed adjustments
+        unit_type_max_speed = min(unit_type_max_speed, 950)
         waypoint = self.group.add_waypoint(
             self.waypoint.position,
             self.waypoint.alt.meters,
-            # The speed we pass will be overridden for most waypoints because we'll set
-            # a TOT and leave the speed up to the AI, but for the few types of waypoints
-            # that don't have TOTs (e.g. nav points), we set a reasonable cruise speed
-            # to pydcs doesn't assign the default of 600kph ground speed (which is very
-            # slow at most altitudes).
-            #
-            # Calling GroundSpeed.for_flight isn't really a correct fix here. We ought
-            # to be using FlightPlan.speed_between_waypoints, but the way the waypoint
-            # builder is called makes it difficult to track the previous waypoint. This
-            # is probably good enough for a stop gap, and most of the flight planning
-            # code is hopefully being rewritten soon anyway.
-            #
-            # https://github.com/dcs-liberation/dcs_liberation/issues/3113
-            speed=GroundSpeed.for_flight(self.flight, self.waypoint.alt).kph,
+            speed=unit_type_max_speed,
             name=self.dcs_name_for_waypoint(),
         )
 
@@ -101,12 +92,8 @@ class PydcsWaypointBuilder:
         self.waypoint.tot = tot
         if not self._viggen_client_tot():
             waypoint.ETA = int((tot - self.now).total_seconds())
-            waypoint.ETA_locked = True
-            # The first waypoint must always have a locked speed (see the bug). Other
-            # waypoints cannot lock both a speed and an ETA, so we need to clear the
-            # speed lock when setting a TOT.
-            # https://github.com/dcs-liberation/dcs_liberation/issues/3195
-            waypoint.speed_locked = waypoint_index == 0
+            waypoint.ETA_locked = False
+            waypoint.speed_locked = True
 
     def _viggen_client_tot(self) -> bool:
         """Viggen player aircraft consider any waypoint with a TOT set to be a target ("M") waypoint.

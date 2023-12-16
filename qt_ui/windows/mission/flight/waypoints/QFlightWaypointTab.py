@@ -35,7 +35,7 @@ class QFlightWaypointTab(QFrame):
     def __init__(self, game: Game, package: Package, flight: Flight):
         super(QFlightWaypointTab, self).__init__()
         self.game = game
-        self.coalition = game.coalition_for(player=True)
+        self.coalition = game.coalition_for(player=self.game.is_player_blue)
         self.package = package
         self.flight = flight
 
@@ -59,7 +59,9 @@ class QFlightWaypointTab(QFrame):
         rlayout.addWidget(QLabel("<small>AI compatible</small>"))
 
         self.recreate_buttons.clear()
-        for task in self.package.target.mission_types(for_player=True):
+        for task in self.package.target.mission_types(
+            for_player=self.game.is_player_blue
+        ):
             if (
                 task == FlightType.AIR_ASSAULT
                 and not self.game.lua_plugin_manager.is_plugin_enabled("ctld")

@@ -35,8 +35,8 @@ class TransferDestinationComboBox(QComboBox):
         super().__init__()
         self.game = game
         self.origin = origin
-
-        for cp in self.game.blue.transit_network.nodes:
+        side = self.game.blue if self.game.is_player_blue else self.game.red
+        for cp in side.transit_network.nodes:
             if cp == origin:
                 continue
             if not self.game.blue.transit_network.has_path_between(origin, cp):
@@ -168,7 +168,11 @@ class ScrollingUnitTransferGrid(QFrame):
         scroll_content = QWidget()
         task_box_layout = QGridLayout()
 
-        unit_types = set(self.game_model.game.faction_for(player=True).ground_units)
+        unit_types = set(
+            self.game_model.game.faction_for(
+                player=self.game_model.game.is_player_blue
+            ).ground_units
+        )
         sorted_units = sorted(
             {u for u in unit_types if self.cp.base.total_units_of_type(u)},
             key=lambda u: u.display_name,

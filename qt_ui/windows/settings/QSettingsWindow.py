@@ -60,7 +60,7 @@ class CheatSettingsBox(QGroupBox):
         )
         self.base_capture_cheat_checkbox.toggled.connect(apply_settings)
 
-        self.red_ato = QLabeledWidget("Show Red ATO:", self.red_ato_checkbox)
+        self.red_ato = QLabeledWidget("Switch to Red:", self.red_ato_checkbox)
         self.main_layout.addLayout(self.red_ato)
         self.frontline_cheat = QLabeledWidget(
             "Enable Frontline Cheats:", self.frontline_cheat_checkbox
@@ -374,7 +374,7 @@ class QSettingsWindow(QDialog):
 
     def cheatMoney(self, amount):
         logging.info("CHEATING FOR AMOUNT : " + str(amount) + "M")
-        self.game.blue.budget += amount
+        self.game.side.budget += amount
         GameUpdateSignal.get_instance().updateGame(self.game)
 
     def applySettings(self):
@@ -390,6 +390,10 @@ class QSettingsWindow(QDialog):
         )
 
         events = GameUpdateEvents()
+        # Reset map to reload control points (when red ato is set, enemy control points become draggable
+        events.reset_on_map_center = (
+            self.game.theater.terrain.map_view_default.position.latlng()
+        )
         self.game.compute_unculled_zones(events)
         EventStream.put_nowait(events)
         GameUpdateSignal.get_instance().updateGame(self.game)

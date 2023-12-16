@@ -4,12 +4,15 @@ from dataclasses import dataclass
 
 from game.commander.tasks.packageplanningtask import PackagePlanningTask
 from game.commander.theaterstate import TheaterState
+from game.settings.settings import AutoAtoTasking
 from game.transfers import CargoShip
 from game.ato.flighttype import FlightType
 
 
 @dataclass
 class PlanAntiShipping(PackagePlanningTask[CargoShip]):
+    minimal_tasking = AutoAtoTasking.Full
+
     def preconditions_met(self, state: TheaterState) -> bool:
         if self.target not in state.enemy_shipping:
             return False

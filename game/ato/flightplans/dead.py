@@ -6,6 +6,7 @@ from typing import Type
 from game.theater.theatergroundobject import (
     EwrGroundObject,
     SamGroundObject,
+    TheaterGroundObject,
 )
 from .formationattack import (
     FormationAttackBuilder,
@@ -13,7 +14,9 @@ from .formationattack import (
     FormationAttackLayout,
 )
 from .invalidobjectivelocation import InvalidObjectiveLocation
+from .. import FlightType
 from ..flightwaypointtype import FlightWaypointType
+from ..loadouts import Loadout
 
 
 class DeadFlightPlan(FormationAttackFlightPlan):
@@ -28,7 +31,7 @@ class Builder(FormationAttackBuilder[DeadFlightPlan, FormationAttackLayout]):
 
         is_ewr = isinstance(location, EwrGroundObject)
         is_sam = isinstance(location, SamGroundObject)
-        if not is_ewr and not is_sam:
+        if (not is_ewr and not is_sam) or not isinstance(location, TheaterGroundObject):
             logging.exception(
                 f"Invalid Objective Location for DEAD flight {self.flight=} at "
                 f"{location=}"

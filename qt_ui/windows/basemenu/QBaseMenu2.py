@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QVBoxLayout,
     QWidget,
+    QCheckBox,
 )
 
 from game import Game
@@ -53,6 +54,7 @@ class QBaseMenu2(QDialog):
         self.setModal(True)
 
         self.setWindowTitle(self.cp.name)
+        player = self.game_model.game.is_player_blue
 
         base_menu_header = QWidget()
         top_layout = QHBoxLayout()
@@ -119,7 +121,19 @@ class QBaseMenu2(QDialog):
         bottom_row = QHBoxLayout()
         main_layout.addLayout(bottom_row)
 
-        if FlightType.OCA_RUNWAY in self.cp.mission_types(for_player=True):
+        if not self.cp.is_friendly(player):
+            self.attack_infrastructure = QCheckBox("Ignore infrastructure")
+            self.attack_infrastructure.setToolTip(
+                "Causes AI to ignore strike targets at the control point"
+            )
+            try:
+                self.attack_infrastructure.setChecked(self.cp.ignore_infrastructure)
+            except AttributeError:
+                self.cp.ignore_infrastructure = False
+            self.attack_infrastructure.toggled.connect(self.set_infrastructure)
+            top_layout.addWidget(self.attack_infrastructure)
+
+        if FlightType.OCA_RUNWAY in self.cp.mission_types(for_player=player):
             runway_attack_button = QPushButton("Attack airfield")
             bottom_row.addWidget(runway_attack_button)
 
@@ -139,7 +153,7 @@ class QBaseMenu2(QDialog):
             capture_button.clicked.connect(self.cheat_capture)
 
         self.budget_display = QLabel(
-            UnitTransactionFrame.BUDGET_FORMAT.format(self.game_model.game.blue.budget)
+            UnitTransactionFrame.BUDGET_FORMAT.format(self.game_model.game.side.budget)
         )
         self.budget_display.setAlignment(Qt.AlignRight | Qt.AlignBottom)
         self.budget_display.setProperty("style", "budget-label")
@@ -187,7 +201,10 @@ class QBaseMenu2(QDialog):
 
     @property
     def can_afford_runway_repair(self) -> bool:
-        return self.game_model.game.blue.budget >= RUNWAY_REPAIR_COST
+        return self.game_model.game.side.budget >= RUNWAY_REPAIR_COST
+
+    def set_infrastructure(self, ignore_infrastructure: bool) -> None:
+        self.cp.ignore_infrastructure = ignore_infrastructure
 
     def begin_runway_repair(self) -> None:
         if not self.can_afford_runway_repair:
@@ -195,7 +212,7 @@ class QBaseMenu2(QDialog):
                 self,
                 "Cannot repair runway",
                 f"Runway repair costs ${RUNWAY_REPAIR_COST}M but you have "
-                f"only ${self.game_model.game.blue.budget}M available.",
+                f"only ${self.game_model.game.side.budget}M available.",
                 QMessageBox.Ok,
             )
             return
@@ -209,7 +226,7 @@ class QBaseMenu2(QDialog):
             return
 
         self.cp.begin_runway_repair()
-        self.game_model.game.blue.budget -= RUNWAY_REPAIR_COST
+        self.game_model.game.side.budget -= RUNWAY_REPAIR_COST
         self.update_repair_button()
         self.update_intel_summary()
         GameUpdateSignal.get_instance().updateGame(self.game_model.game)
@@ -310,5 +327,5 @@ class QBaseMenu2(QDialog):
 
     def update_budget(self, game: Game) -> None:
         self.budget_display.setText(
-            UnitTransactionFrame.BUDGET_FORMAT.format(game.blue.budget)
+            UnitTransactionFrame.BUDGET_FORMAT.format(game.side.budget)
         )

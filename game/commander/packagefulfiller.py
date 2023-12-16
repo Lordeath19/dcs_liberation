@@ -39,6 +39,7 @@ class PackageFulfiller:
         self.theater = theater
         self.flight_db = flight_db
         self.player_missions_asap = settings.auto_ato_player_missions_asap
+        self.max_active_aircraft = settings.max_active_aircraft_limit
         self.default_start_type = settings.default_start_type
 
     @property
@@ -56,6 +57,15 @@ class PackageFulfiller:
     @property
     def doctrine(self) -> Doctrine:
         return self.coalition.doctrine
+
+    def tasked_aircraft(self, packages: Optional[Iterable[Package]] = None) -> int:
+        if packages is None:
+            packages = self.coalition.ato.packages
+        total_tasked = 0
+        for package in packages:
+            for flight in package.flights:
+                total_tasked += flight.count
+        return total_tasked
 
     @property
     def threat_zones(self) -> ThreatZones:
@@ -221,6 +231,12 @@ class PackageFulfiller:
             if not flight.flight_plan.waypoints:
                 with tracer.trace("Flight plan population"):
                     flight.recreate_flight_plan()
+
+        # This package has too many aircraft
+        if self.max_active_aircraft < self.tasked_aircraft() + self.tasked_aircraft(
+            [package]
+        ):
+            return None
 
         if package.has_players and self.player_missions_asap:
             package.auto_asap = True

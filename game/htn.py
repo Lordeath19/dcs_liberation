@@ -6,6 +6,8 @@ from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from typing import Any, Generic, Optional, TypeVar
 
+from game.settings.settings import AutoAtoTasking
+
 WorldStateT = TypeVar("WorldStateT", bound="WorldState[Any]")
 
 
@@ -16,6 +18,7 @@ class WorldState(ABC, Generic[WorldStateT]):
 
 
 class Task(Generic[WorldStateT]):
+    minimal_tasking: AutoAtoTasking = AutoAtoTasking.AirDefence
     pass
 
 

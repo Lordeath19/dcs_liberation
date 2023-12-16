@@ -163,6 +163,10 @@ class TheaterState(WorldState["TheaterState"]):
 
         refueling_targets: list[MissionTarget] = []
         theater_refuling_point = finder.preferred_theater_refueling_control_point()
+
+        for carrier in finder.carrier_control_points():
+            refueling_targets.append(carrier)
+
         if theater_refuling_point is not None:
             refueling_targets.append(theater_refuling_point)
 

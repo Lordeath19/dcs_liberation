@@ -22,7 +22,10 @@ class SeadFlightPlan(FormationAttackFlightPlan):
 
 class Builder(FormationAttackBuilder[SeadFlightPlan, FormationAttackLayout]):
     def layout(self) -> FormationAttackLayout:
-        return self._build(FlightWaypointType.INGRESS_SEAD)
+        built_attack_plan = self._build(FlightWaypointType.INGRESS_SEAD)
+        for target in built_attack_plan.targets:
+            target.only_for_player = True
+        return built_attack_plan
 
     def build(self, dump_debug_info: bool = False) -> SeadFlightPlan:
         return SeadFlightPlan(self.flight, self.layout())

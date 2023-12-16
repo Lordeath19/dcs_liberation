@@ -14,7 +14,7 @@ from .pydcswaypointbuilder import PydcsWaypointBuilder
 class DeadIngressBuilder(PydcsWaypointBuilder):
     def add_tasks(self, waypoint: MovingPoint) -> None:
         self.register_special_waypoints(self.waypoint.targets)
-        if self.flight.loadout.has_weapon_of_type(WeaponTypeEnum.CRUISE):
+        if self.flight.any_member_has_weapon_of_type(WeaponTypeEnum.CRUISE):
             self.add_strike_tasks(waypoint)
         else:
             self.add_attack_tasks(waypoint)

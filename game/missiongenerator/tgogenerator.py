@@ -846,6 +846,8 @@ class TgoGenerator:
 
             for ground_object in cp.ground_objects:
                 generator: GroundObjectGenerator
+                if not getattr(ground_object, "active", True):
+                    continue
                 if isinstance(ground_object, CarrierGroundObject):
                     generator = CarrierGenerator(
                         ground_object,

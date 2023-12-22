@@ -262,6 +262,13 @@ def parse_args() -> argparse.Namespace:
         help="Show the air wing configuration dialog after generating the game.",
     )
 
+    new_game.add_argument(
+        "--unit-multiplier",
+        type=float,
+        default=1.0,
+        help="Generator ground unit theater multiplier.",
+    )
+
     lint_weapons = subparsers.add_parser("lint-weapons")
     lint_weapons.add_argument("aircraft", help="Name of the aircraft variant to lint.")
 
@@ -275,6 +282,7 @@ class CreateGameParams:
     campaign_path: Path
     blue: str
     red: str
+    unit_multiplier: float
     supercarrier: bool
     auto_procurement: bool
     inverted: bool
@@ -292,6 +300,7 @@ class CreateGameParams:
             args.campaign,
             args.blue,
             args.red,
+            args.unit_multiplier,
             args.supercarrier,
             args.auto_procurement,
             args.inverted,
@@ -334,6 +343,7 @@ def create_game(params: CreateGameParams) -> Game:
             no_lha=False,
             no_player_navy=False,
             no_enemy_navy=False,
+            unit_multiplier=params,
         ),
         ModSettings(
             a4_skyhawk=False,

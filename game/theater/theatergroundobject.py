@@ -6,7 +6,7 @@ from abc import ABC
 from typing import Any, Iterator, List, Optional, TYPE_CHECKING
 
 from dcs.mapping import Point
-
+from dcs.unittype import VehicleType
 from shapely.geometry import Point as ShapelyPoint
 
 from game.sidc import (
@@ -21,13 +21,15 @@ from game.sidc import (
     SymbolSet,
 )
 from game.theater.presetlocation import PresetLocation
+from .iadsnetwork.iadsrole import IadsRole
 from .missiontarget import MissionTarget
+from ..settings.settings import RandomLocation
 from ..utils import Distance, Heading, meters
 
 if TYPE_CHECKING:
     from game.ato.flighttype import FlightType
     from game.threatzones import ThreatPoly
-    from .theatergroup import TheaterUnit, TheaterGroup
+    from .theatergroup import TheaterUnit, TheaterGroup, IadsGroundGroup
     from .controlpoint import ControlPoint
 
 
@@ -69,6 +71,7 @@ class TheaterGroundObject(MissionTarget, SidcDescribable, ABC):
         self.category = category
         self.heading = location.heading
         self.control_point = control_point
+        self.active = True
         self.sea_object = sea_object
         self.groups: List[TheaterGroup] = []
         self.original_name = location.original_name
@@ -100,9 +103,18 @@ class TheaterGroundObject(MissionTarget, SidcDescribable, ABC):
             else StandardIdentity.HOSTILE_FAKER
         )
 
+    def activate(self) -> None:
+        self.threat_poly()
+        self.active = True
+
+    def deactivate(self) -> None:
+        self.invalidate_threat_poly()
+        self.active = False
+
     @property
     def is_dead(self) -> bool:
-        return self.alive_unit_count == 0
+        # TODO: For compatibility use getattr, delete when balls grow up
+        return not getattr(self, "active", True) or self.alive_unit_count == 0
 
     @property
     def units(self) -> Iterator[TheaterUnit]:
@@ -150,6 +162,21 @@ class TheaterGroundObject(MissionTarget, SidcDescribable, ABC):
     def faction_color(self) -> str:
         return "BLUE" if self.control_point.captured else "RED"
 
+    @property
+    def has_movable_vehicles(self) -> bool:
+        return all(
+            issubclass(unit.type, VehicleType) and unit.type.theoretically_movable
+            for unit in self.units
+        )
+
+    @property
+    def should_randomize_location(self) -> bool:
+        return (
+            self.control_point.coalition.game.settings.randomize_location
+            != RandomLocation.Disabled
+            and self.has_movable_vehicles
+        )
+
     def is_friendly(self, to_player: bool) -> bool:
         return self.control_point.is_friendly(to_player)
 
@@ -162,11 +189,13 @@ class TheaterGroundObject(MissionTarget, SidcDescribable, ABC):
                 # TODO: FlightType.TROOP_TRANSPORT
             ]
         else:
-            yield from [
-                FlightType.STRIKE,
+            possible_types = [
                 FlightType.REFUELING,
                 FlightType.CAS,
             ]
+            if not self.should_randomize_location:
+                possible_types.append(FlightType.STRIKE)
+            yield from possible_types
         yield from super().mission_types(for_player)
 
     @property
@@ -561,6 +590,32 @@ class SamGroundObject(IadsGroundObject):
             # it twice.
             if mission_type is not FlightType.DEAD:
                 yield mission_type
+
+    @property
+    def has_lorad(self) -> bool:
+        # Check if any of the groups inside this ground object are an IadsGroundGroup containing SAM_AS_EWR.
+        # SAM_AS_EWR is defined as LORAD, as such we can grab this property as a clear indicator
+        return any(
+            isinstance(group, IadsGroundGroup)
+            and group.iads_role == IadsRole.SAM_AS_EWR
+            for group in self.groups
+        )
+
+    @property
+    def should_randomize_location(self) -> bool:
+        should_randomize = False
+        settings = self.control_point.coalition.game.settings
+
+        if settings.randomize_location == RandomLocation.All:
+            should_randomize = True
+        elif (
+            settings.randomize_location == RandomLocation.Exclude_lorad
+            and self.has_lorad
+        ):
+            should_randomize = True
+        if should_randomize and not settings.randomize_sam_location_ignore_static:
+            return self.has_movable_vehicles
+        return should_randomize
 
     @property
     def capturable(self) -> bool:

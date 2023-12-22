@@ -241,6 +241,7 @@ class Game:
         self.lua_plugin_manager = new_plugin_manager
 
         ObjectiveDistanceCache.set_theater(self.theater)
+        self.scale_ground_units(GameUpdateEvents())
         self.compute_unculled_zones(GameUpdateEvents())
         if not game_still_initializing:
             # We don't need to push events that happen during load. The UI will fully
@@ -491,6 +492,29 @@ class Game:
 
     def navmesh_for(self, player: bool) -> NavMesh:
         return self.coalition_for(player).nav_mesh
+
+    def scale_ground_units(self, events: GameUpdateEvents) -> None:
+        for cp in self.theater.controlpoints:
+            presets = cp.preset_locations
+            preset_fraction = self.settings.get_multiplier_fraction
+            deactivated_groups = (
+                preset_fraction(presets.aaa, reverse=True)
+                + preset_fraction(presets.short_range_sams, reverse=True)
+                + preset_fraction(presets.armor_groups, reverse=True)
+            )
+            for tgo in cp.connected_objectives:
+                if getattr(tgo, "active", True) and tgo.position in deactivated_groups:
+                    tgo.deactivate()
+                    events.update_tgo(tgo)
+                elif (
+                    not getattr(tgo, "active", True)
+                    and tgo.position not in deactivated_groups
+                ):
+                    tgo.activate()
+                    events.update_tgo(tgo)
+        events.reset_on_map_center = (
+            self.theater.terrain.map_view_default.position.latlng()
+        )
 
     def compute_unculled_zones(self, events: GameUpdateEvents) -> None:
         """

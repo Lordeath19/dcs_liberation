@@ -3,7 +3,7 @@ import textwrap
 from typing import Callable
 
 from PySide6.QtCore import QItemSelectionModel, QPoint, QSize, Qt
-from PySide6.QtGui import QStandardItem, QStandardItemModel
+from PySide6.QtGui import QStandardItem, QStandardItemModel, QCloseEvent
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QCheckBox,
@@ -280,8 +280,12 @@ class QSettingsWindow(QDialog):
         self.setWindowTitle("Settings")
         self.setWindowIcon(CONST.ICONS["Settings"])
         self.setMinimumSize(600, 250)
-
         self.initUi()
+
+    def closeEvent(self, close_event: QCloseEvent):
+        events = GameUpdateEvents()
+        self.game.scale_ground_units(events)
+        EventStream.put_nowait(events)
 
     def initUi(self):
         self.layout = QGridLayout()
@@ -341,7 +345,6 @@ class QSettingsWindow(QDialog):
 
         self.layout.addWidget(self.categoryList, 0, 0, 1, 1)
         self.layout.addLayout(self.right_layout, 0, 1, 5, 1)
-
         self.setLayout(self.layout)
 
     def initCheatLayout(self):

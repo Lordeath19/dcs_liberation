@@ -536,7 +536,7 @@ class Settings:
         max=150,
     )
 
-    unit_multiplier: int = bounded_float_option(
+    unit_multiplier: float = bounded_float_option(
         "Desired unit multiplier",
         page=MISSION_GENERATOR_PAGE,
         section=GAMEPLAY_SECTION,

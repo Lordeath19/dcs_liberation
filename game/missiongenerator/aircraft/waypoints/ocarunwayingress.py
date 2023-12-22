@@ -13,7 +13,6 @@ from dcs.task import (
 )
 from dcs.task import WeaponType
 
-from game.data.weapons import WeaponType
 from game.data.weapons import WeaponType as WeaponTypeEnum
 from game.theater import Airfield
 from game.utils import Distance, nautical_miles, meters
@@ -68,7 +67,7 @@ class OcaRunwayIngressBuilder(PydcsWaypointBuilder):
         # for more details.
         # The LGB work around assumes the Airfield position in DCS is on a runway, which seems
         # to be the case for most if not all airfields.
-        elif self.flight.any_member_has_weapon_of_type(WeaponType.LGB):
+        elif self.flight.any_member_has_weapon_of_type(WeaponTypeEnum.LGB):
             waypoint.tasks.append(
                 Bombing(
                     position=target.position,

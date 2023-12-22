@@ -512,9 +512,7 @@ class Game:
                 ):
                     tgo.activate()
                     events.update_tgo(tgo)
-        events.reset_on_map_center = (
-            self.theater.terrain.map_view_default.position.latlng()
-        )
+        events.reset_on_map_center = self.theater.terrain.map_view_default.position
 
     def compute_unculled_zones(self, events: GameUpdateEvents) -> None:
         """

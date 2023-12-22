@@ -59,13 +59,14 @@ class OcaRunwayIngressBuilder(PydcsWaypointBuilder):
                 target.__class__.__name__,
             )
             return
-
+        if self.flight.any_member_has_weapon_of_type(WeaponTypeEnum.CRUISE):
+            self.add_strike_tasks(waypoint)
         # The BombingRunway task in DCS does not use LGBs, which necessitates special handling
         # by using the Bombing task instead. See https://github.com/dcs-liberation/dcs_liberation/issues/894
         # for more details.
         # The LGB work around assumes the Airfield position in DCS is on a runway, which seems
         # to be the case for most if not all airfields.
-        if self.flight.any_member_has_weapon_of_type(WeaponType.LGB):
+        elif self.flight.any_member_has_weapon_of_type(WeaponTypeEnum.LGB):
             waypoint.tasks.append(
                 Bombing(
                     position=target.position,

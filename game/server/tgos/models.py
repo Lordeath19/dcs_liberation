@@ -51,6 +51,6 @@ class TgoJs(BaseModel):
         tgos = []
         for control_point in game.theater.controlpoints:
             for tgo in control_point.connected_objectives:
-                if not tgo.is_control_point:
+                if not tgo.is_control_point and getattr(tgo, "active", True):
                     tgos.append(TgoJs.for_tgo(tgo))
         return tgos

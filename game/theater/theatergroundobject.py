@@ -7,7 +7,6 @@ from typing import Any, Iterator, List, Optional, TYPE_CHECKING
 
 from dcs.mapping import Point
 from dcs.unittype import VehicleType
-
 from shapely.geometry import Point as ShapelyPoint
 
 from game.sidc import (
@@ -72,6 +71,7 @@ class TheaterGroundObject(MissionTarget, SidcDescribable, ABC):
         self.category = category
         self.heading = location.heading
         self.control_point = control_point
+        self.active = True
         self.sea_object = sea_object
         self.groups: List[TheaterGroup] = []
         self.original_name = location.original_name
@@ -103,9 +103,18 @@ class TheaterGroundObject(MissionTarget, SidcDescribable, ABC):
             else StandardIdentity.HOSTILE_FAKER
         )
 
+    def activate(self) -> None:
+        self.threat_poly()
+        self.active = True
+
+    def deactivate(self) -> None:
+        self.invalidate_threat_poly()
+        self.active = False
+
     @property
     def is_dead(self) -> bool:
-        return self.alive_unit_count == 0
+        # TODO: For compatibility use getattr, delete when balls grow up
+        return not getattr(self, "active", True) or self.alive_unit_count == 0
 
     @property
     def units(self) -> Iterator[TheaterUnit]:

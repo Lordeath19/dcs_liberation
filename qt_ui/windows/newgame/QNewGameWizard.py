@@ -174,6 +174,7 @@ class NewGameWizard(QtWidgets.QWizard):
             desired_player_mission_duration=timedelta(
                 minutes=self.field("desired_player_mission_duration")
             ),
+            unit_multiplier=self.field("unit_multiplier") / 10,
             automate_aircraft_reinforcements=self.field("automate_aircraft_purchases"),
             supercarrier=self.field("supercarrier"),
         )
@@ -764,6 +765,13 @@ class GeneratorOptions(QtWidgets.QWizardPage):
         self.registerField(
             "desired_player_mission_duration", desired_player_mission_duration.spinner
         )
+        unit_multiplier = FloatSpinSlider(
+            minimum=0.1,
+            maximum=1.0,
+            divisor=10,
+            initial=default_settings.unit_multiplier,
+        )
+        self.registerField("unit_multiplier", unit_multiplier.spinner)
 
         generatorLayout = QtWidgets.QGridLayout()
         generatorLayout.addWidget(QtWidgets.QLabel("No Aircraft Carriers"), 1, 0)
@@ -778,6 +786,9 @@ class GeneratorOptions(QtWidgets.QWizardPage):
         generatorLayout.addWidget(no_enemy_navy, 5, 1)
         generatorLayout.addWidget(QtWidgets.QLabel("Desired mission duration"), 6, 0)
         generatorLayout.addLayout(desired_player_mission_duration, 7, 0)
+        generatorLayout.addWidget(QtWidgets.QLabel("Desired unit multiplier"), 8, 0)
+        generatorLayout.addLayout(unit_multiplier, 9, 0)
+
         generatorSettingsGroup.setLayout(generatorLayout)
 
         modSettingsGroup = QtWidgets.QGroupBox("Mod Settings")

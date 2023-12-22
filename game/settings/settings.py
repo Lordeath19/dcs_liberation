@@ -1,10 +1,11 @@
 import logging
+import math
 from collections.abc import Iterator
 from dataclasses import Field, dataclass, fields
 from datetime import timedelta
 from enum import Enum, unique
 from pathlib import Path
-from typing import Any, Optional, get_type_hints
+from typing import Any, Optional, get_type_hints, List
 
 import yaml
 from dcs.forcedoptions import ForcedOptions
@@ -535,6 +536,16 @@ class Settings:
         max=150,
     )
 
+    unit_multiplier: int = bounded_float_option(
+        "Desired unit multiplier",
+        page=MISSION_GENERATOR_PAGE,
+        section=GAMEPLAY_SECTION,
+        default=1.0,
+        min=0.1,
+        divisor=10,
+        max=1.0,
+    )
+
     # Performance
     perf_smoke_gen: bool = boolean_option(
         "Smoke visual effect on the front line",
@@ -634,6 +645,18 @@ class Settings:
     enable_runway_state_cheat: bool = False
 
     only_player_takeoff: bool = True  # Legacy parameter do not use
+
+    def get_multiplier_fraction(
+        self, in_list: List[Any], reverse: bool = False
+    ) -> List[Any]:
+        # Get percentage of list
+        remaining_elements = in_list[: math.ceil(len(in_list) * self.unit_multiplier)]
+        # If reverse is True, get the opposite of the percentage from the list (if input is 30% then get the last 70%)
+        return (
+            [item for item in in_list if item not in remaining_elements]
+            if reverse
+            else remaining_elements
+        )
 
     def save_player_settings(self) -> None:
         """Saves the player's global settings to the user directory."""

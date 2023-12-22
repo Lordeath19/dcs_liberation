@@ -36,7 +36,9 @@ from ..data.groups import GroupTask
 from ..persistence.paths import liberation_user_dir
 from ..plugins import LuaPluginManager
 from ..profiling import logged_duration
+from ..server import EventStream
 from ..settings import Settings
+from ..sim import GameUpdateEvents
 
 
 @dataclass(frozen=True)
@@ -326,6 +328,9 @@ class AirbaseGroundObjectGenerator(ControlPointGroundObjectGenerator):
         self.generate_ammunition_depots()
         self.generate_missile_sites()
         self.generate_coastal_sites()
+        events = GameUpdateEvents()
+        self.game.scale_ground_units(events)
+        EventStream.put_nowait(events)
 
     def generate_armor_groups(self) -> None:
         for position in self.control_point.preset_locations.armor_groups:

@@ -56,7 +56,7 @@ class BuyQuotasDialog(QDialog):
 
         sorted_squadrons = sorted(
             self.air_wing.iter_squadrons(),
-            key=lambda s: (s.location.name, s.aircraft.name),
+            key=lambda s: (s.location.name, s.aircraft.display_name),
         )
         for row, squadron in enumerate(sorted_squadrons):
             self.add_purchase_row(squadron, task_box_layout, row)
@@ -85,7 +85,7 @@ class BuyQuotasDialog(QDialog):
 
     @staticmethod
     def display_name_of(squadron: Squadron) -> str:
-        return "<br />".join([squadron.aircraft.name, squadron.location.name])
+        return "<br />".join([squadron.aircraft.display_name, squadron.location.name])
 
     @staticmethod
     def aircraft_info_of(squadron: Squadron) -> str:

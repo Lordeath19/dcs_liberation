@@ -65,6 +65,6 @@ tasks:
   OCA/Aircraft: 740
   OCA/Runway: 600
   SEAD: 160
-  SEAD Escort: 160
+  SEAD Escort: 300
   Strike: 600
   TARCAP: 450

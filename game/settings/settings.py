@@ -1,10 +1,11 @@
 import logging
+import math
 from collections.abc import Iterator
 from dataclasses import Field, dataclass, fields
 from datetime import timedelta
 from enum import Enum, unique
 from pathlib import Path
-from typing import Any, Optional, get_type_hints
+from typing import Any, Optional, get_type_hints, List
 
 import yaml
 from dcs.forcedoptions import ForcedOptions
@@ -26,6 +27,27 @@ class AutoAtoBehavior(Enum):
     Never = "Never assign player pilots"
     Default = "No preference"
     Prefer = "Prefer player pilots"
+
+
+@unique
+class RandomLocation(Enum):
+    """The location randomization of sam sites in game.
+    Exclude_sam - Include all ground mobile units except sams
+    Exclude_lorad - Include all sams except sams with LORAD as a tasking (SA-10/PATRIOT)
+    All - Include all units with no regard to the operational range
+    """
+
+    Disabled = "Disabled"
+    Exclude_sam = "Exclude SAMs"
+    Exclude_lorad = "Exclude lorad"
+    All = "All"
+
+
+@unique
+class AutoAtoTasking(Enum):
+    AirDefence = "Plan AEWC, Refuel and BARCAP"
+    Limited = "Plan AEWC, Refuel, BARCAP and CAS"
+    Full = "Plan all tasks"
 
 
 DIFFICULTY_PAGE = "Difficulty"
@@ -50,6 +72,8 @@ GAMEPLAY_SECTION = "Gameplay"
 # This section had the header: "Disabling settings below may improve performance, but
 # will impact the overall quality of the experience."
 PERFORMANCE_SECTION = "Performance"
+
+MINIMUM_MISSION_DURATION = 30
 
 
 @dataclass
@@ -115,6 +139,21 @@ class Settings:
         "No night missions",
         page=DIFFICULTY_PAGE,
         section=MISSION_DIFFICULTY_SECTION,
+        default=False,
+    )
+    randomize_location: RandomLocation = choices_option(
+        "Ground Location Randomization",
+        page=DIFFICULTY_PAGE,
+        section=MISSION_DIFFICULTY_SECTION,
+        choices={v.value: v for v in RandomLocation},
+        detail="Note: This options disables strike tasks for affected units.",
+        default=RandomLocation.Disabled,
+    )
+    randomize_sam_location_ignore_static: bool = boolean_option(
+        "Randomize location of static SAMs",
+        page=DIFFICULTY_PAGE,
+        section=MISSION_DIFFICULTY_SECTION,
+        detail="Applies if SAM randomization is enabled",
         default=False,
     )
     # Mission Restrictions
@@ -239,6 +278,23 @@ class Settings:
             "replenishment for future turns."
         ),
     )
+    #: The maximum number of aircraft a side can have active at one time. Changing this after
+    #: the campaign has started will have no immediate effect; flights already generated
+    #: will not be removed if the limit is lowered and flights will not be
+    #: immediately created if the limit is raised.
+    max_active_aircraft_limit: int = bounded_int_option(
+        "Maximum number of active aircraft per side",
+        CAMPAIGN_MANAGEMENT_PAGE,
+        PILOTS_AND_SQUADRONS_SECTION,
+        default=120,
+        min=0,
+        max=1000,
+        detail=(
+            "Sets the maximum number of active aircraft per side."
+            "Changing this value will not have an immediate effect, but will alter "
+            "planning for future turns. Player generated flights ignore this number"
+        ),
+    )
     #: The number of pilots a squadron can replace per turn.
     squadron_replenishment_rate: int = bounded_int_option(
         "Squadron pilot replenishment rate",
@@ -286,6 +342,17 @@ class Settings:
         detail=(
             "Aircraft auto-purchase is directed by the auto-planner, so disabling "
             "auto-planning disables auto-purchase."
+        ),
+    )
+    auto_ato_tasking: AutoAtoTasking = choices_option(
+        "Automatic package planning limitation",
+        CAMPAIGN_MANAGEMENT_PAGE,
+        HQ_AUTOMATION_SECTION,
+        default=AutoAtoTasking.Full,
+        choices={v.value: v for v in AutoAtoTasking},
+        detail=(
+            "Aircraft auto-purchase is directed by the auto-planner, so limiting "
+            "auto tasking limits auto-purchase."
         ),
     )
     auto_ato_player_missions_asap: bool = boolean_option(
@@ -465,8 +532,18 @@ class Settings:
         page=MISSION_GENERATOR_PAGE,
         section=GAMEPLAY_SECTION,
         default=timedelta(minutes=60),
-        min=30,
+        min=MINIMUM_MISSION_DURATION,
         max=150,
+    )
+
+    unit_multiplier: float = bounded_float_option(
+        "Desired unit multiplier",
+        page=MISSION_GENERATOR_PAGE,
+        section=GAMEPLAY_SECTION,
+        default=1.0,
+        min=0.1,
+        divisor=10,
+        max=1.0,
     )
 
     # Performance
@@ -568,6 +645,18 @@ class Settings:
     enable_runway_state_cheat: bool = False
 
     only_player_takeoff: bool = True  # Legacy parameter do not use
+
+    def get_multiplier_fraction(
+        self, in_list: List[Any], reverse: bool = False
+    ) -> List[Any]:
+        # Get percentage of list
+        remaining_elements = in_list[: math.ceil(len(in_list) * self.unit_multiplier)]
+        # If reverse is True, get the opposite of the percentage from the list (if input is 30% then get the last 70%)
+        return (
+            [item for item in in_list if item not in remaining_elements]
+            if reverse
+            else remaining_elements
+        )
 
     def save_player_settings(self) -> None:
         """Saves the player's global settings to the user directory."""

@@ -8,6 +8,8 @@ from PySide6.QtWidgets import (
     QWidget,
     QSpinBox,
     QCheckBox,
+    QScrollArea,
+    QWidget,
 )
 
 from game import Game
@@ -122,9 +124,9 @@ class QFlightPayloadTab(QFrame):
             flight, self.member_selector.selected_member
         )
         self.loadout_selector.currentIndexChanged.connect(self.on_new_loadout)
-        scrolling_layout.addWidget(self.loadout_selector)
-        scrolling_layout.addWidget(self.payload_editor)
-        scrolling_layout.addWidget(docsText)
+        layout.addWidget(self.loadout_selector)
+        layout.addWidget(self.payload_editor)
+        layout.addWidget(docsText)
 
         self.setLayout(layout)
 

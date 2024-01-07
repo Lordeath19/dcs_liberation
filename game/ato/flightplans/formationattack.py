@@ -155,6 +155,9 @@ class FormationAttackBuilder(IBuilder[FlightPlanT, LayoutT], ABC):
         for target_waypoint in target_waypoints:
             target_waypoint.wants_escort = True
 
+        # In case there is a rush (player wants it done asap)
+        if len(self.flight.package.flights) < 2 and self.package.auto_asap:
+            hold.only_for_player = True
         split = builder.split(self.package.waypoints.split)
         split.wants_escort = True
         refuel = builder.refuel(self.package.waypoints.refuel)

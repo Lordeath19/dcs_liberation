@@ -36,7 +36,7 @@ pre-commit==3.5.0
 pydantic==2.5.2
 pydantic-settings==2.1.0
 pydantic_core==2.14.5
-pydcs @ git+https://github.com/pydcs/dcs@1092fc419d3f879e8e7951b25e15d8b7c9938627
+pydcs @ git+https://github.com/Lordeath19/dcs@99cb392e62ed8d97c870e6c6828bc2c378f64814#egg=pydcs
 pyinstaller==5.13.1
 pyinstaller-hooks-contrib==2023.6
 pyproj==3.6.1
@@ -67,3 +67,4 @@ uvicorn==0.24.0.post1
 virtualenv==20.24.7
 watchfiles==0.21.0
 websockets==12.0
+luadata==1.0.5

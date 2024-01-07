@@ -3,7 +3,7 @@ import textwrap
 from typing import Callable
 
 from PySide6.QtCore import QItemSelectionModel, QPoint, QSize, Qt
-from PySide6.QtGui import QStandardItem, QStandardItemModel
+from PySide6.QtGui import QStandardItem, QStandardItemModel, QCloseEvent
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QCheckBox,
@@ -60,7 +60,7 @@ class CheatSettingsBox(QGroupBox):
         )
         self.base_capture_cheat_checkbox.toggled.connect(apply_settings)
 
-        self.red_ato = QLabeledWidget("Show Red ATO:", self.red_ato_checkbox)
+        self.red_ato = QLabeledWidget("Switch to Red:", self.red_ato_checkbox)
         self.main_layout.addLayout(self.red_ato)
         self.frontline_cheat = QLabeledWidget(
             "Enable Frontline Cheats:", self.frontline_cheat_checkbox
@@ -280,8 +280,12 @@ class QSettingsWindow(QDialog):
         self.setWindowTitle("Settings")
         self.setWindowIcon(CONST.ICONS["Settings"])
         self.setMinimumSize(600, 250)
-
         self.initUi()
+
+    def closeEvent(self, close_event: QCloseEvent):
+        events = GameUpdateEvents()
+        self.game.scale_ground_units(events)
+        EventStream.put_nowait(events)
 
     def initUi(self):
         self.layout = QGridLayout()
@@ -341,7 +345,6 @@ class QSettingsWindow(QDialog):
 
         self.layout.addWidget(self.categoryList, 0, 0, 1, 1)
         self.layout.addLayout(self.right_layout, 0, 1, 5, 1)
-
         self.setLayout(self.layout)
 
     def initCheatLayout(self):
@@ -374,7 +377,7 @@ class QSettingsWindow(QDialog):
 
     def cheatMoney(self, amount):
         logging.info("CHEATING FOR AMOUNT : " + str(amount) + "M")
-        self.game.blue.budget += amount
+        self.game.side.budget += amount
         GameUpdateSignal.get_instance().updateGame(self.game)
 
     def applySettings(self):
@@ -390,6 +393,10 @@ class QSettingsWindow(QDialog):
         )
 
         events = GameUpdateEvents()
+        # Reset map to reload control points (when red ato is set, enemy control points become draggable
+        events.reset_on_map_center = (
+            self.game.theater.terrain.map_view_default.position.latlng()
+        )
         self.game.compute_unculled_zones(events)
         EventStream.put_nowait(events)
         GameUpdateSignal.get_instance().updateGame(self.game)

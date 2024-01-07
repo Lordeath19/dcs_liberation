@@ -711,6 +711,16 @@ class AirWingConfigurationTab(QWidget):
         add_button.clicked.connect(lambda state: self.add_squadron())
         layout.addWidget(add_button, 2, 1, 1, 1)
 
+        add_all_button = QPushButton("Add All Squadrons")
+        add_all_button.clicked.connect(lambda state: self.add_all_squadrons())
+        layout.addWidget(add_all_button, 3, 1, 1, 1)
+
+        add_all_flyable_button = QPushButton("Add All Flyable Squadrons")
+        add_all_flyable_button.clicked.connect(
+            lambda state: self.add_all_squadrons(True)
+        )
+        layout.addWidget(add_all_flyable_button, 3, 2, 1, 1)
+
         self.squadrons_panel = AircraftSquadronsPanel(
             game, coalition, self.parking_tracker
         )
@@ -718,6 +728,29 @@ class AirWingConfigurationTab(QWidget):
         layout.addLayout(self.squadrons_panel, 1, 3, 2, 1)
 
         self.type_list.page_index_changed.connect(self.squadrons_panel.setCurrentIndex)
+
+    def apply_squadron(
+        self,
+        aircraft_type: AircraftType,
+        base: ControlPoint,
+        task: FlightType,
+        squadron_def: SquadronDef,
+    ):
+        squadron = Squadron.create_from(
+            squadron_def,
+            task,
+            DEFAULT_SQUADRON_SIZE,
+            base,
+            self.coalition,
+            self.game,
+        )
+
+        # Add Squadron
+        if not self.type_list.item_model.findItems(aircraft_type.name):
+            self.type_list.add_aircraft_type(aircraft_type)
+            # TODO Select the newly added type
+        self.squadrons_panel.add_squadron_to_panel(squadron)
+        self.update()
 
     def add_squadron(self) -> None:
         selected_aircraft = None
@@ -757,21 +790,37 @@ class AirWingConfigurationTab(QWidget):
             )
         )
 
-        squadron = Squadron.create_from(
-            squadron_def,
-            selected_task,
-            DEFAULT_SQUADRON_SIZE,
-            selected_base,
-            self.coalition,
-            self.game,
+        self.apply_squadron(selected_type, selected_base, selected_task, squadron_def)
+
+    def add_all_squadrons(self, player_only: bool = False) -> None:
+        bases = list(self.game.theater.control_points_for(self.coalition.player))
+
+        # List of all Aircrafts possible to operate with the given bases
+        possible_aircrafts = [
+            aircraft
+            for aircraft in self.coalition.faction.aircrafts
+            if any(base.can_operate(aircraft) for base in bases)
+        ]
+
+        remaining_aircrafts = set(possible_aircrafts).difference(
+            set(self.squadrons_panel.squadrons_pages.keys())
         )
 
-        # Add Squadron
-        if not self.type_list.item_model.findItems(selected_type.display_name):
-            self.type_list.add_aircraft_type(selected_type)
-            # TODO Select the newly added type
-        self.squadrons_panel.add_squadron_to_panel(squadron)
-        self.update()
+        for remaining_aircraft in remaining_aircrafts:
+            if player_only and not remaining_aircraft.dcs_unit_type.flyable:
+                continue
+            all_tasks = remaining_aircraft.task_priorities
+            task = max(all_tasks, key=all_tasks.get) if all_tasks else None
+            # Aircraft has no task, can't add it
+            if task is None:
+                continue
+            base = next(base for base in bases if base.can_operate(remaining_aircraft))
+            squadron_def = (
+                self.coalition.air_wing.squadron_def_generator.generate_for_aircraft(
+                    remaining_aircraft
+                )
+            )
+            self.apply_squadron(remaining_aircraft, base, task, squadron_def)
 
     def apply(self) -> None:
         self.squadrons_panel.apply()

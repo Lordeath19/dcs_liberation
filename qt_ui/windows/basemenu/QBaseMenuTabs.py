@@ -12,7 +12,7 @@ class QBaseMenuTabs(QTabWidget):
     def __init__(self, cp: ControlPoint, game_model: GameModel):
         super(QBaseMenuTabs, self).__init__()
 
-        if not cp.captured:
+        if not cp.is_friendly(game_model.game.is_player_blue):
             self.intel = QIntelInfo(cp)
             self.addTab(self.intel, "Intel")
 

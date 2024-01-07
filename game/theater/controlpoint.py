@@ -328,6 +328,7 @@ class ControlPoint(MissionTarget, SidcDescribable, ABC):
         at: StartingPosition,
         theater: ConflictTheater,
         starts_blue: bool,
+        ignore_infrastructure: bool = False,
         cptype: ControlPointType = ControlPointType.AIRBASE,
     ) -> None:
         super().__init__(name, position)
@@ -343,6 +344,7 @@ class ControlPoint(MissionTarget, SidcDescribable, ABC):
         self._coalition: Optional[Coalition] = None
         self.captured_invert = False
         self.front_lines: dict[ControlPoint, FrontLine] = {}
+        self.ignore_infrastructure = ignore_infrastructure
         # TODO: Should be Airbase specific.
         self.connected_points: List[ControlPoint] = []
         self.convoy_routes: Dict[ControlPoint, Tuple[Point, ...]] = {}

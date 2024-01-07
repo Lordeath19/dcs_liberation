@@ -13,8 +13,15 @@ from typing import Any, Dict, Iterator, List, Optional, TYPE_CHECKING, Type
 
 import dcs.vehicles
 from dcs import Mission, Point
-from dcs.action import DoScript, SceneryDestructionZone
-from dcs.condition import MapObjectIsDead
+from dcs.action import (
+    DoScript,
+    SceneryDestructionZone,
+    SetFlag,
+    RemoveSceneObjects,
+    RemoveSceneObjectsMask,
+    ClearFlag,
+)
+from dcs.condition import MapObjectIsDead, TimeAfter, TimeSinceFlag
 from dcs.country import Country
 from dcs.ships import (
     CVN_71,
@@ -41,13 +48,17 @@ from dcs.triggers import (
     TriggerZone,
     TriggerZoneCircular,
     TriggerZoneQuadPoint,
+    TriggerCondition,
 )
 from dcs.unit import InvisibleFARP, Unit
 from dcs.unitgroup import MovingGroup, ShipGroup, StaticGroup, VehicleGroup
 from dcs.unittype import ShipType, VehicleType
 from dcs.vehicles import vehicle_map
+from shapely.geometry import Point as ShapelyPoint
+from shapely.ops import nearest_points
 
 from game.missiongenerator.missiondata import CarrierInfo, MissionData
+from game.point_with_heading import PointWithHeading
 from game.radio.radios import RadioFrequency, RadioRegistry
 from game.radio.tacan import TacanBand, TacanChannel, TacanRegistry, TacanUsage
 from game.runways import RunwayData
@@ -57,10 +68,11 @@ from game.theater.theatergroundobject import (
     GenericCarrierGroundObject,
     LhaGroundObject,
     MissileSiteGroundObject,
+    SamGroundObject,
 )
 from game.theater.theatergroup import IadsGroundGroup, SceneryUnit
 from game.unitmap import UnitMap
-from game.utils import Heading, feet, knots, mps
+from game.utils import Heading, feet, knots, mps, dcs_to_shapely_point, nautical_miles
 
 if TYPE_CHECKING:
     from game import Game
@@ -93,6 +105,10 @@ class GroundObjectGenerator:
     def generate(self) -> None:
         if self.culled:
             return
+        if self.ground_object.should_randomize_location:
+            logging.debug(f"Found randomizable target: {self.ground_object.name}")
+            self.offset_ground_position()
+            self.remove_object_trees()
         for group in self.ground_object.groups:
             vehicle_units = []
             ship_units = []
@@ -124,6 +140,40 @@ class GroundObjectGenerator:
             if ship_units:
                 self.create_ship_group(group.group_name, ship_units)
 
+    def remove_object_trees(self) -> None:
+        tree_remover_zone = self.m.triggers.add_triggerzone(
+            self.ground_object.groups[0].units[0].position,
+            radius=500,
+            hidden=True,
+            name=f"RemoveTrees_{self.ground_object.name}_zone",
+        )
+
+        flag_id = random.randint(100, 99999999999)
+        flag_delay = random.randint(120, 300)
+        tree_remover_trigger_flag = TriggerOnce(
+            Event.NoEvent,
+            f"RemoveTrees_{self.ground_object.name}_init",
+        )
+
+        tree_remover_trigger = TriggerCondition(
+            Event.NoEvent,
+            f"RemoveTrees_{self.ground_object.name}",
+        )
+
+        tree_remover_trigger_flag.add_condition(TimeAfter(10))
+        tree_remover_trigger_flag.add_action(SetFlag(flag_id))
+
+        tree_remover_trigger.add_condition(TimeSinceFlag(flag_id, flag_delay))
+        tree_remover_trigger.add_action(
+            RemoveSceneObjects(
+                RemoveSceneObjectsMask.TREES_ONLY, zone=tree_remover_zone.id
+            )
+        )
+        tree_remover_trigger.add_action(ClearFlag(flag_id))
+        tree_remover_trigger.add_action(SetFlag(flag_id))
+        self.m.triggerrules.triggers.append(tree_remover_trigger_flag)
+        self.m.triggerrules.triggers.append(tree_remover_trigger)
+
     def create_vehicle_group(
         self, group_name: str, units: list[TheaterUnit]
     ) -> VehicleGroup:
@@ -138,6 +188,8 @@ class GroundObjectGenerator:
                     position=unit.position,
                     heading=unit.position.heading.degrees,
                 )
+                if self.ground_object.should_randomize_location:
+                    vehicle_group.hidden_on_mfd = True
                 vehicle_group.units[0].player_can_drive = True
                 self.enable_eplrs(vehicle_group, unit.type)
                 vehicle_group.units[0].name = unit.unit_name
@@ -273,6 +325,45 @@ class GroundObjectGenerator:
             zone.properties,
         )
 
+    def offset_ground_position(self) -> None:
+        if (
+            len(self.ground_object.groups) < 1
+            or len(self.ground_object.groups[0].units) < 1
+        ):
+            return
+        parent_unit = self.ground_object.groups[0].units[0]
+        new_position = self.find_ground_position(parent_unit.position, 1)
+        diff_x = parent_unit.position.x - new_position.x
+        diff_y = parent_unit.position.y - new_position.y
+
+        for group in self.ground_object.groups:
+            for unit in group.units:
+                unit.position.x = unit.position.x - diff_x
+                unit.position.y = unit.position.y - diff_y
+
+    def find_ground_position(self, initial: Point, max_distance: int) -> Point:
+        """Finds a valid ground position for the front line center.
+
+        Checks for positions along the front line first. If none succeed, the nearest
+        land position to the initial point is used.
+        """
+        theater = self.game.theater
+        if theater.landmap is None:
+            return initial
+
+        initial_point = ShapelyPoint(initial.x, initial.y)
+        random_point = initial.point_from_heading(
+            random.uniform(0, 360), nautical_miles(max_distance).meters
+        )
+        random_buffer = initial_point.buffer(nautical_miles(max_distance).meters)
+        masked_buffer = theater.landmap.inclusion_zone_only.intersection(random_buffer)
+        if masked_buffer.is_empty:
+            return theater.nearest_land_pos(random_point)
+        nearest_good, _ = nearest_points(
+            masked_buffer, dcs_to_shapely_point(random_point)
+        )
+        return initial.new_in_same_map(nearest_good.x, nearest_good.y)
+
     def generate_destruction_trigger_rule(self, trigger_zone: TriggerZone) -> None:
         # Add destruction zone trigger
         t = TriggerStart(comment="Destruction")
@@ -370,6 +461,71 @@ class MissileSiteGenerator(GroundObjectGenerator):
                         if vehicle_map[u.type].threat_range > site_range:
                             site_range = vehicle_map[u.type].threat_range
         return site_range
+
+
+class IadsSiteGenerator(GroundObjectGenerator):
+    def create_fake_groups(self) -> None:
+        for group in self.ground_object.groups:
+            vehicle_units = []
+            for unit in group.units:
+                if unit.is_vehicle and unit.alive:
+                    vehicle_units.append(unit)
+            if vehicle_units:
+                self.create_fake_group(f"{group.group_name}_fake", vehicle_units)
+
+    def create_fake_group(
+        self, group_name: str, units: list[TheaterUnit]
+    ) -> VehicleGroup:
+        vehicle_group: Optional[VehicleGroup] = None
+        for unit in units:
+            name = f"{unit.unit_name}_fake"
+            position = PointWithHeading(
+                unit.position.x,
+                unit.position.y,
+                unit.position.heading,
+                unit.position._terrain,
+            )
+            fake_unit = TheaterUnit(
+                unit.id,
+                name,
+                unit.type,
+                position,
+                unit.ground_object,
+                unit.alive,
+            )
+
+            assert issubclass(fake_unit.type, VehicleType)
+
+            if vehicle_group is None:
+                vehicle_group = self.m.vehicle_group(
+                    self.country,
+                    group_name,
+                    fake_unit.type,
+                    position=fake_unit.position,
+                    heading=fake_unit.position.heading.degrees,
+                )
+                vehicle_group.units[0].player_can_drive = False
+                vehicle_group.units[0].name = name
+                vehicle_group.late_activation = True
+            else:
+                vehicle_unit = self.m.vehicle(name, fake_unit.type)
+                vehicle_unit.player_can_drive = False
+                vehicle_unit.position = fake_unit.position
+                vehicle_unit.heading = fake_unit.position.heading.degrees
+                vehicle_group.add_unit(vehicle_unit)
+            self._register_theater_unit(
+                vehicle_group.id, fake_unit, vehicle_group.units[-1]
+            )
+        if vehicle_group is None:
+            raise RuntimeError(f"Error creating VehicleGroup for {group_name}")
+        return vehicle_group
+
+    def generate(self) -> None:
+        if self.culled:
+            return
+        if self.ground_object.should_randomize_location:
+            self.create_fake_groups()
+        super().generate()
 
 
 class GenericCarrierGenerator(GroundObjectGenerator):
@@ -690,6 +846,8 @@ class TgoGenerator:
 
             for ground_object in cp.ground_objects:
                 generator: GroundObjectGenerator
+                if not getattr(ground_object, "active", True):
+                    continue
                 if isinstance(ground_object, CarrierGroundObject):
                     generator = CarrierGenerator(
                         ground_object,
@@ -717,6 +875,10 @@ class TgoGenerator:
                         self.runways,
                         self.unit_map,
                         self.mission_data,
+                    )
+                elif isinstance(ground_object, SamGroundObject):
+                    generator = IadsSiteGenerator(
+                        ground_object, country, self.game, self.m, self.unit_map
                     )
                 elif isinstance(ground_object, MissileSiteGroundObject):
                     generator = MissileSiteGenerator(

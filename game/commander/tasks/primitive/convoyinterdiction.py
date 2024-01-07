@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from game.commander.tasks.packageplanningtask import PackagePlanningTask
 from game.commander.theaterstate import TheaterState
 from game.data.doctrine import Doctrine
+from game.settings.settings import AutoAtoTasking
 from game.transfers import Convoy
 from game.ato.flighttype import FlightType
 
@@ -13,6 +14,8 @@ from game.ato.flighttype import FlightType
 class PlanConvoyInterdiction(PackagePlanningTask[Convoy]):
     def preconditions_met(self, state: TheaterState) -> bool:
         if self.target not in state.enemy_convoys:
+            return False
+        elif state.context.settings.auto_ato_tasking is not AutoAtoTasking.Full:
             return False
         if not self.target_area_preconditions_met(state):
             return False

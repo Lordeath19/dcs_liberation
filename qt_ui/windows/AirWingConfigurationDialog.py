@@ -746,7 +746,7 @@ class AirWingConfigurationTab(QWidget):
         )
 
         # Add Squadron
-        if not self.type_list.item_model.findItems(aircraft_type.name):
+        if not self.type_list.item_model.findItems(aircraft_type.display_name):
             self.type_list.add_aircraft_type(aircraft_type)
             # TODO Select the newly added type
         self.squadrons_panel.add_squadron_to_panel(squadron)

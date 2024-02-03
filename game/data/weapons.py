@@ -345,10 +345,10 @@ class WeaponWSType:
     def available_on(self, date: datetime.date) -> bool:
         weapons = self.weapon_with_clsid()
         if weapons is None:
-            return False
+            return True
         earliest_weapon = min(
             weapons,
-            key=lambda weapon: weapon.weapon_group.introduction_year or float("inf"),
+            key=lambda weapon: weapon.weapon_group.introduction_year or 0,
         )
         return earliest_weapon.available_on(date)
 

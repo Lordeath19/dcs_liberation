@@ -141,6 +141,8 @@ class GroundObjectGenerator:
                 self.create_ship_group(group.group_name, ship_units)
 
     def remove_object_trees(self) -> None:
+        if not self.ground_object.groups or not self.ground_object.groups[0].units:
+            return
         tree_remover_zone = self.m.triggers.add_triggerzone(
             self.ground_object.groups[0].units[0].position,
             radius=500,

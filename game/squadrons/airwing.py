@@ -95,7 +95,11 @@ class AirWing:
             for squadron in squadrons:
                 if squadron.location.ferry_only:
                     continue
-                if squadron.untasked_aircraft and squadron.capable_of(task):
+                if (
+                    squadron.untasked_aircraft
+                    and squadron.capable_of(task)
+                    and squadron.location.runway_is_operational()
+                ):
                     aircrafts.append(aircraft)
                     if aircraft not in best_aircraft_for_task:
                         best_aircraft_for_task.append(aircraft)

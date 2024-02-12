@@ -1,3 +1,4 @@
+import logging
 import textwrap
 from collections import defaultdict
 from typing import Iterable, Iterator, Optional
@@ -166,6 +167,12 @@ class AirWingConfigParkingTracker(QWidget):
     def add_squadron(self, squadron: Squadron) -> None:
         self.by_cp[squadron.location].add(squadron)
         self.signal_change()
+
+    def reset(self, game: Game) -> None:
+        self.by_cp: dict[ControlPoint, set[Squadron]] = defaultdict(set)
+        for coalition in game.coalitions:
+            for squadron in coalition.air_wing.iter_squadrons():
+                self.add_squadron(squadron)
 
     def remove_squadron(self, squadron: Squadron) -> None:
         self.by_cp[squadron.location].remove(squadron)
@@ -571,6 +578,7 @@ class AircraftSquadronsPanel(QStackedLayout):
         self.squadrons_pages: dict[AircraftType, AircraftSquadronsPage] = {}
         for aircraft, squadrons in self.air_wing.squadrons.items():
             self.new_page_for_type(aircraft, squadrons)
+        self.parking_tracker.reset(self.game)
         self.update()
 
 
@@ -711,6 +719,10 @@ class AirWingConfigurationTab(QWidget):
         add_button.clicked.connect(lambda state: self.add_squadron())
         layout.addWidget(add_button, 2, 1, 1, 1)
 
+        add_all_button = QPushButton("Remove Aircraft")
+        add_all_button.clicked.connect(lambda state: self.remove_squadrons())
+        layout.addWidget(add_all_button, 2, 2, 1, 1)
+
         add_all_button = QPushButton("Add All Squadrons")
         add_all_button.clicked.connect(lambda state: self.add_all_squadrons())
         layout.addWidget(add_all_button, 3, 1, 1, 1)
@@ -792,6 +804,28 @@ class AirWingConfigurationTab(QWidget):
 
         self.apply_squadron(selected_type, selected_base, selected_task, squadron_def)
 
+    def remove_squadrons(self) -> None:
+        if self.type_list.selectionModel().currentIndex().row() < 0:
+            return
+
+        selected_aircraft = self.type_list.item_model.item(
+            self.type_list.selectionModel().currentIndex().row()
+        ).text()
+        try:
+            aircraft_type = AircraftType.named(selected_aircraft)
+        except KeyError:
+            logging.warning(
+                "Aircraft type could not be found",
+                extra={"aircraft_name": selected_aircraft},
+            )
+            return
+        page = self.squadrons_panel.squadrons_pages[aircraft_type]
+        aircraft_configs = page.squadrons_config
+        while len(aircraft_configs.squadron_configs) > 0:
+            aircraft_configs.remove_squadron(
+                aircraft_configs.squadron_configs[0].squadron
+            )
+
     def add_all_squadrons(self, player_only: bool = False) -> None:
         bases = list(self.game.theater.control_points_for(self.coalition.player))
 
@@ -814,7 +848,29 @@ class AirWingConfigurationTab(QWidget):
             # Aircraft has no task, can't add it
             if task is None:
                 continue
-            base = next(base for base in bases if base.can_operate(remaining_aircraft))
+            base = next(
+                (
+                    base
+                    for base in bases
+                    if base.can_operate(remaining_aircraft)
+                    and self.parking_tracker.used_parking_at(base)
+                    + DEFAULT_SQUADRON_SIZE
+                    <= base.unclaimed_parking()
+                ),
+                None,
+            )
+            if not base:
+                missing_aircraft = set(possible_aircrafts).difference(
+                    set(self.squadrons_panel.squadrons_pages.keys())
+                )
+                missing_aircraft_text = [
+                    aircraft.display_name for aircraft in missing_aircraft
+                ]
+                logging.info(
+                    f"Ran out of space while adding all aircraft, missing aircraft: "
+                    f"{', '.join(missing_aircraft_text)}"
+                )
+                return
             squadron_def = (
                 self.coalition.air_wing.squadron_def_generator.generate_for_aircraft(
                     remaining_aircraft

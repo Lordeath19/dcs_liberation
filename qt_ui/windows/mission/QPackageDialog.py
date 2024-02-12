@@ -1,4 +1,5 @@
 """Dialogs for creating and editing ATO packages."""
+import dataclasses
 import logging
 from typing import Optional
 
@@ -120,6 +121,11 @@ class QPackageDialog(QDialog):
         )
         self.button_layout.addWidget(self.add_flight_button)
 
+        self.clone_flight_button = QPushButton("Clone Selected")
+        self.clone_flight_button.clicked.connect(self.on_clone_flight)
+        self.clone_flight_button.setEnabled(model.rowCount() > 0)
+        self.button_layout.addWidget(self.clone_flight_button)
+
         self.delete_flight_button = QPushButton("Delete Selected")
         self.delete_flight_button.setProperty("style", "btn-danger")
         self.delete_flight_button.clicked.connect(self.on_delete_flight)
@@ -202,6 +208,37 @@ class QPackageDialog(QDialog):
             )
         # noinspection PyUnresolvedReferences
         self.package_changed.emit()
+
+    def on_clone_flight(self) -> None:
+        """Removes the selected flight from the package."""
+        flight = self.package_view.selected_item
+        if flight is None:
+            logging.error(f"Cannot clone flight when no flight is selected.")
+            return
+
+        if not flight.squadron.can_fulfill_flight(flight.count):
+            QMessageBox.critical(
+                self,
+                "Flight clone failed",
+                "Not enough pilots/aircraft in squadron for flight clone",
+                QMessageBox.Ok,
+            )
+            return
+        clone_flight = Flight(
+            package=flight.package,
+            country=flight.country,
+            squadron=flight.squadron,
+            count=flight.count,
+            flight_type=flight.flight_type,
+            start_type=flight.start_type,
+            divert=flight.divert,
+            cargo=flight.cargo,
+        )
+        clone_flight.degrade_to_custom_flight_plan()
+        clone_flight.flight_plan.layout.custom_waypoints[:] = [
+            dataclasses.replace(waypoint) for waypoint in flight.flight_plan.waypoints
+        ]
+        self.add_flight(clone_flight)
 
     def on_delete_flight(self) -> None:
         """Removes the selected flight from the package."""

@@ -6,12 +6,14 @@ Saves from 9.x are not compatible with 10.0.0.
 
 * **[Engine]** Support for DCS 2.9.2.49629 Open Beta. (F-15E JDAM and JSOW, F-16 AIM-9P, updated Falklands and Normandy airfields).
 * **[UI]** Improved the description of "runway" state for FARPs, FOBs, carriers, and off-map spawns.
+* **[UI]** Add remove aircraft to air wing configuration when starting a new game.
 
 ## Fixes
 
 * **[Flight Planning]** Aircraft from even numbered flights will no longer become inaccessible when canceling a draft package.
 * **[UI]** Flight members in the loadout menu are now numbered starting from 1 instead of 0.
 * **[UI]** Flight plan paths are now drawn behind all other map elements, fixing rare cases where they could prevent other UI elements from being clickable.
+* **[UI]** Fix bug where adding multiple squadrons wouldn't distribute flights. Now stopping when airbases are full
 
 # 9.0.0
 

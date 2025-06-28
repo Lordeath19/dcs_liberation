@@ -236,6 +236,14 @@ class TheaterGroundObject(MissionTarget, SidcDescribable, ABC):
         self.groups = []
 
     @property
+    def hidden(self) -> bool:
+        return False
+
+    @property
+    def visible(self) -> bool:
+        return not (self.hidden or self.is_dead)
+
+    @property
     def capturable(self) -> bool:
         raise NotImplementedError
 
@@ -530,6 +538,8 @@ class SamGroundObject(IadsGroundObject):
 
     @property
     def sidc_status(self) -> Status:
+        if self.hidden:
+            return Status.PLANNED_ANTICIPATED_SUSPECT
         if self.is_dead:
             return Status.PRESENT_DESTROYED
         elif self.dead_units:
@@ -555,6 +565,11 @@ class SamGroundObject(IadsGroundObject):
             # it twice.
             if mission_type is not FlightType.DEAD:
                 yield mission_type
+
+    # Todo: Find better way to propogate hiding target
+    @property
+    def hidden(self) -> bool:
+        return self.control_point.coalition.game.settings.use_recon
 
     @property
     def capturable(self) -> bool:

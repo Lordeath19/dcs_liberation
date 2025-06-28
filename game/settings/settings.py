@@ -402,6 +402,12 @@ class Settings:
         default=False,
         remember_player_choice=True,
     )
+    use_recon: bool = boolean_option(
+        "Objectives are hidden until scouted",
+        MISSION_GENERATOR_PAGE,
+        GAMEPLAY_SECTION,
+        default=False,
+    )
     generate_marks: bool = boolean_option(
         "Put objective markers on the map",
         MISSION_GENERATOR_PAGE,

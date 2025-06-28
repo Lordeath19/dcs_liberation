@@ -402,6 +402,7 @@ export type Tgo = {
   category: string;
   blue: boolean;
   position: LatLng;
+  scouted?: boolean;
   units: string[];
   threat_ranges: number[];
   detection_ranges: number[];

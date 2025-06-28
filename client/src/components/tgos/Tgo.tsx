@@ -26,23 +26,36 @@ interface TgoProps {
 export default function Tgo(props: TgoProps) {
   const [openNewPackageDialog] = useOpenNewTgoPackageDialogMutation();
   const [openInfoDialog] = useOpenTgoInfoDialogMutation();
+
+  const isScouted = Boolean(props.tgo.scouted);
+
   return (
     <Marker
       position={props.tgo.position}
       icon={iconForTgo(props.tgo)}
       eventHandlers={{
         click: () => {
-          openInfoDialog({ tgoId: props.tgo.id });
+          if (isScouted) {
+            openInfoDialog({tgoId: props.tgo.id});
+          }
         },
         contextmenu: () => {
-          openNewPackageDialog({ tgoId: props.tgo.id });
+          if (isScouted) {
+            openNewPackageDialog({tgoId: props.tgo.id});
+          }
         },
       }}
     >
       <Tooltip>
-        {`${props.tgo.name} (${props.tgo.control_point_name})`}
-        <br />
-        <SplitLines items={props.tgo.units} />
+        <>
+          {`${props.tgo.name} (${props.tgo.control_point_name})`}
+          <br />
+          {isScouted ? (
+            <SplitLines items={props.tgo.units} />
+          ) : (
+            <>Unscouted | recon required</>
+          )}
+        </>
       </Tooltip>
     </Marker>
   );

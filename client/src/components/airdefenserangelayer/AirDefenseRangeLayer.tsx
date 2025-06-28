@@ -49,7 +49,7 @@ interface AirDefenseRangeLayerProps {
 
 export const AirDefenseRangeLayer = (props: AirDefenseRangeLayerProps) => {
   const tgos = Object.values(useAppSelector(selectTgos).tgos);
-  var tgosForSide = tgos.filter((tgo) => tgo.blue === props.blue);
+  var tgosForSide = tgos.filter((tgo) => tgo.blue === props.blue && tgo.scouted);
 
   return (
     <LayerGroup>

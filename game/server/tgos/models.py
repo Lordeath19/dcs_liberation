@@ -19,6 +19,7 @@ class TgoJs(BaseModel):
     category: str
     blue: bool
     position: LeafletPoint
+    scouted: bool
     units: list[str]  # TODO: Event stream
     threat_ranges: list[float]  # TODO: Event stream
     detection_ranges: list[float]  # TODO: Event stream
@@ -39,6 +40,7 @@ class TgoJs(BaseModel):
             category=tgo.category,
             blue=tgo.control_point.captured,
             position=LeafletPoint.from_pydcs(tgo.position),
+            scouted=not tgo.hidden,
             units=[unit.display_name for unit in tgo.units],
             threat_ranges=threat_ranges,
             detection_ranges=detection_ranges,

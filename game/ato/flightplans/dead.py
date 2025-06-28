@@ -15,6 +15,7 @@ from .formationattack import (
 )
 from .invalidobjectivelocation import InvalidObjectiveLocation
 from .. import FlightType
+from ..flightmembers import FlightMembers
 from ..flightwaypointtype import FlightWaypointType
 from ..loadouts import Loadout
 
@@ -40,8 +41,8 @@ class Builder(FormationAttackBuilder[DeadFlightPlan, FormationAttackLayout]):
 
         # There is no need to use DEAD when you can use STRIKE as this is just AAA
         if not location.has_live_radar_sam:
-            self.flight.loadout = Loadout.default_for_task_and_aircraft(
-                FlightType.CAS, self.flight.unit_type.dcs_unit_type
+            self.flight.roster = FlightMembers.from_roster(
+                self.flight, self.flight.roster
             )
 
         return self._build(FlightWaypointType.INGRESS_DEAD)

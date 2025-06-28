@@ -12,7 +12,7 @@ from dcs.task import (
     WeaponType as DcsWeaponType,
 )
 
-from game.data.weapons import WeaponType as WeaponTypeEnum
+from game.data.weapons import WeaponType as WeaponTypeEnum, WeaponType
 from game.theater import Airfield
 from game.utils import Distance, nautical_miles, meters
 from .pydcswaypointbuilder import PydcsWaypointBuilder
